@@ -1,14 +1,17 @@
+package Tasks ;
+
 public class Task {
     protected String title;//Название, кратко описывающее суть задачи
     protected String description; //Описание, в котором раскрываются детали.
     protected int id;//Уникальный идентификационный номер задачи
     protected String status;
 
-    public Task(String title, String description) {
+
+    public Task(String title, String description,String status) {
         this.title = title;
         this.description = description;
+        this.status = status;
     }
-
     public Task(String title, String description, int id, String status) {
         this.title = title;
         this.description = description;

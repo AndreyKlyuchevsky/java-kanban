@@ -1,163 +1,106 @@
+import Tasks.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class Manager {
     private int id = 1;
-    protected HashMap<Integer, Object> taskList = new HashMap<>();
-    protected HashMap<String, ArrayList<Integer>> arrayTaskTypes = new HashMap<>();
+    private HashMap<Integer, Task> taskList = new HashMap<>();
+    private HashMap<Integer, Epic> epicList = new HashMap<>();
+    private HashMap<Integer, Subtask> subtaskList = new HashMap<>();
 
-    public Manager() {
-        this.arrayTaskTypes.put("Task", new ArrayList<>());
-        this.arrayTaskTypes.put("Epic", new ArrayList<>());
-        this.arrayTaskTypes.put("Subtask", new ArrayList<>());
+    private int getId() {// присвоили ID, увыеличиваем ID
+        return id++;
     }
 
-    private void idAssignment() { //присвоили ID
-        id++;// увыеличиваем ID
+    public void addTask(Task task) {// создаем простую задачу
+        task.setId(getId());
+        taskList.put(task.getId(), task);// добавляем задачу в общий список
     }
 
-    private int getId() {// создаем простую задачу
-        return id;
+    public void addEpic(Epic epic) { //создаем задачу(Epic) с подзадачами
+        epic.setId(getId());
+        epicList.put(epic.getId(), epic);// добавляем задачу в общий список
     }
 
+    public void addSubtask(Subtask subtask) {//создаем подзадачу
+        subtask.setId(getId()); // присваиваем Id
+        epicList.get(subtask.getEpicId()).setSubtaskId(subtask.getId());// передаем в epic Id Subtask
+        subtaskList.put(subtask.getId(), subtask);// добавляем задачу в общий список
+        statusCalculationEpic(subtask);// пересчитываем статус Epic
 
-    public HashMap<Integer, Object> getTaskList() {// возвращате список задач
-        return taskList;
     }
 
-    private void addTaskList(Integer id, Object task) {// добавляем задачу в общий список
-        taskList.put(id, task);
-        addArrayTaskTypes(id, task);
-    }
-
-    private void addArrayTaskTypes(Integer id, Object task) {// добавляем задачу в список по типу задачи
-
-        if (task.getClass() == Task.class) {
-            arrayTaskTypes.get("Task").add(id);
-        } else if (task.getClass() == Epic.class) {
-            arrayTaskTypes.get("Epic").add(id);
-        } else if (task.getClass() == Subtask.class) {
-            arrayTaskTypes.get("Subtask").add(id);
-        }
-    }
-
-
-    private Object returnTask(Integer id) {// создаем простую задачу
-        return this.taskList.get(id);
-    }
-
-    private String statusCalculationEpic(Epic epic) {// пересчитываем статус Epic
-        String status=epic.subtask.get(0).status;;
-        for (int i = 0; i < epic.subtask.size(); i++) {
-            Subtask subtask = epic.subtask.get(i);
-            if (subtask.status.equals("NEW") & status.equals("NEW")) {
+    private void statusCalculationEpic(Subtask subtask) {// пересчитываем статус Epic
+        Epic epic = epicList.get(subtask.getEpicId());
+        ArrayList<Integer> idSubtask = epic.getSubtaskId();
+        String status= subtaskList.get(idSubtask.get(0)).getStatus();
+        for (int i = 1; i < idSubtask.size(); i++) {
+            Subtask subtasks = subtaskList.get(idSubtask.get(i));
+            if (subtasks.getStatus().equals("NEW") & status.equals("NEW")) {
                 status = "NEW";
-            } else if (subtask.status.equals("DONE") & !status.equals("DONE")) {
+            } else if (subtasks.getStatus().equals("DONE") & !status.equals("DONE")) {
                 status = "DONE";
             } else {
                 status = "IN_PROGRESS";
             }
         }
-        return status;
+        epic.setStatus(status);
     }
 
-    public void addTask(Task task) {// создаем простую задачу
-        task.id=getId();
-        task.status="NEW";
-        addTaskList(task.id, task);;// добавляем задачу в общий список
-        idAssignment();
+    public void updateTask(Task task,int oldIdTask) {// создаем простую задачу
+        taskList.put(oldIdTask, task);// добавляем задачу в общий список
     }
 
-    public void addEpic(Epic epic) { //создаем задачу(Epic) с подзадачами
-        epic.id=getId();
-        epic.status="NEW";
-        addTaskList(epic.id, epic);
-        idAssignment();
+    public void updateEpic(Epic epic,int oldIdEpic ) { //создаем задачу(Epic) с подзадачами
+        epicList.put(oldIdEpic, epic);
     }
 
-    public void addSubtask(Subtask subtask,Epic epic ) {//создаем подзадачу
-        subtask.id= getId();
-        subtask.status= "NEW";
-        subtask.epic=epic;
-        epic.setSubtask(subtask);// добавляем в Epic подзадачу
-        addTaskList(subtask.id, subtask);// добавляем задачу в общий список
-        epic.status=statusCalculationEpic(epic);// пересчитываем статус Epic
-        idAssignment();
+    public void updateSubtask(Subtask subtask,int oldIdSubtask ) {//создаем подзадачу
+        subtaskList.put(oldIdSubtask, subtask);
+        subtask.setId(oldIdSubtask);
+        statusCalculationEpic(subtask);// пересчитываем статус Epic
     }
 
-
-    public void updateTask(String title, String description, String status,int id) {// создаем простую задачу
-        Task tasks = new Task(title, description, id, status);
-        addTaskList(getId(), tasks);// добавляем задачу в общий список
-
-    }
-
-    public void updateEpic(String title, String description, String status,int id) { //создаем задачу(Epic) с подзадачами
-        Epic epic = new Epic(title, description, id, "NEW");
-        addTaskList(getId(), epic);
-    }
-
-    public void updateSubtask(String title, String description,  String status,Epic epic, Subtask subtask ) {//создаем подзадачу
-        subtask.title=title;
-        subtask.description=description;
-        subtask.status=status;
-        epic.status=statusCalculationEpic(epic);// пересчитываем статус Epic
-    }
-
-    public void removeAll() {//удаляем все задачи
-        if (taskList.size() > 0) {
-            taskList.clear();
-        }
-        if (arrayTaskTypes.size() > 0) {
-            arrayTaskTypes.clear();
-        }
-    }
-
-    public void removeID(int id) {//удаляем по ID задачи
-        if (taskList.containsKey(id)) {
-            Object tasks=taskList.get(id);
-            if (tasks.getClass() == Task.class) {
-                taskList.remove(id);
-                arrayTaskTypes.get("Subtask").remove(id);
-            } else if (tasks.getClass() == Epic.class) {
-                for (int i = 0; i < ((Epic) tasks).subtask.size(); i++) {
-                    int idSubtask=((Epic) tasks).subtask.get(i).id;
-                    for (int i1 = 0; i1 < arrayTaskTypes.get("Subtask").size(); i1++) {
-                        if(arrayTaskTypes.get("Subtask").get(i1)==idSubtask){
-                            arrayTaskTypes.get("Subtask").remove(i1);
-                        }
-                    }
-
-                    taskList.remove(idSubtask);
-                }
-                ((Epic) tasks).subtask.clear();
-                taskList.remove(id);
-                arrayTaskTypes.get("Epic").add(id);
-            } else if (tasks.getClass() == Subtask.class) {
-                taskList.remove(id);
-                arrayTaskTypes.get("Subtask").remove(id);
-            }
-        }
-    }
-
-    public Object GetByID(int id) { //Получение по идентификатору
+    public Task getId(int id) { //возвращаем объект по Id
         if (taskList.containsKey(id)) {
             return taskList.get(id);
+        } else if (epicList.containsKey(id)) {
+            return epicList.get(id);
+        } else return subtaskList.getOrDefault(id, null);
+    }
+
+    public ArrayList<Task> printAll() {//возвращаем все объекты
+        ArrayList<Task> listTask = new ArrayList<>(taskList.values());
+        for (Map.Entry<Integer, Epic> integerEpicEntry : epicList.entrySet()) {
+            listTask.add(integerEpicEntry.getValue());
         }
-        return null;
+        for (Map.Entry<Integer, Subtask> integerSubtaskEntry : subtaskList.entrySet()) {
+            listTask.add(integerSubtaskEntry.getValue());
+        }
+       return listTask;
     }
 
-    public HashMap<Integer, Object> printAll() {
-        return taskList;
+    public void removeAll(){
+        taskList.clear();
+        epicList.clear();
+        subtaskList.clear();
     }
 
-    public ArrayList<Subtask> EpicGetSubtask(int id) {
+    public void removeId(int id){
         if (taskList.containsKey(id)) {
-            Epic epic = (Epic) taskList.get(id);
-            return epic.subtask;
+            taskList.remove(id);
+        } else if (epicList.containsKey(id)) {
+            for (Integer subtaskId : epicList.get(id).getSubtaskId()) {
+                subtaskList.remove(subtaskId);
+            }
+             epicList.remove(id);
+        } else if (subtaskList.containsKey(id)) {
+            int idEpic = subtaskList.get(id).getEpicId();
+            epicList.get(idEpic).removeSubtaskId(id);
+            subtaskList.remove(id);
         }
-        return null;
     }
 
 
