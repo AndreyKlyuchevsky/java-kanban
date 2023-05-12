@@ -5,11 +5,11 @@ public class Epic  extends Task {
     protected ArrayList<Integer> subtaskId= new ArrayList<>();
 
     public Epic(String title, String description, int id) {
-        super(title, description, id, "NEW");
+        super(title, description, id, StatusTask.NEW);
     }
 
     public Epic(String title, String description) {
-        super(title, description, "NEW");
+        super(title, description, StatusTask.NEW);
     }
     public void removeSubtaskId(int id) {
 
@@ -33,7 +33,7 @@ public class Epic  extends Task {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", status='" + status + '\'' +
+                ", status='" + statusTask + '\'' +
                 ", subtaskId=" + subtaskId +
                 '}' + "\n";
     }

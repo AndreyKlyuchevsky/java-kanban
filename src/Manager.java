@@ -6,9 +6,9 @@ import java.util.Map;
 
 public class Manager {
     private int id = 1;
-    private HashMap<Integer, Task> taskList = new HashMap<>();
-    private HashMap<Integer, Epic> epicList = new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private final HashMap<Integer, Task> taskList = new HashMap<>();
+    private final HashMap<Integer, Epic> epicList = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
 
     private int getId() {// присвоили ID, увыеличиваем ID
         return id++;
@@ -35,31 +35,33 @@ public class Manager {
     private void statusCalculationEpic(Subtask subtask) {// пересчитываем статус Epic
         Epic epic = epicList.get(subtask.getEpicId());
         ArrayList<Integer> idSubtask = epic.getSubtaskId();
-        String status= subtaskList.get(idSubtask.get(0)).getStatus();
+        StatusTask status= subtaskList.get(idSubtask.get(0)).getStatus();
         for (int i = 1; i < idSubtask.size(); i++) {
             Subtask subtasks = subtaskList.get(idSubtask.get(i));
-            if (subtasks.getStatus().equals("NEW") & status.equals("NEW")) {
-                status = "NEW";
-            } else if (subtasks.getStatus().equals("DONE") & !status.equals("DONE")) {
-                status = "DONE";
+            if (subtasks.getStatus()==StatusTask.NEW && status==StatusTask.NEW) {
+                status = StatusTask.NEW;
+            } else if (subtasks.getStatus()==StatusTask.DONE & status!=StatusTask.DONE) {
+                status = StatusTask.DONE;
             } else {
-                status = "IN_PROGRESS";
+                status =  StatusTask.IN_PROGRESS;
             }
         }
         epic.setStatus(status);
     }
 
-    public void updateTask(Task task,int oldIdTask) {// создаем простую задачу
-        taskList.put(oldIdTask, task);// добавляем задачу в общий список
+    public void updateTask(Task task) {// создаем простую задачу
+        taskList.put(task.getId(), task);// добавляем задачу в общий список
     }
 
-    public void updateEpic(Epic epic,int oldIdEpic ) { //создаем задачу(Epic) с подзадачами
-        epicList.put(oldIdEpic, epic);
+    public void updateEpic(Epic epic ) { //создаем задачу(Epic) с подзадачами
+        epicList.put(epic.getId(), epic);
     }
 
-    public void updateSubtask(Subtask subtask,int oldIdSubtask ) {//создаем подзадачу
-        subtaskList.put(oldIdSubtask, subtask);
-        subtask.setId(oldIdSubtask);
+    public void updateSubtask(Subtask subtask ) {//создаем подзадачу
+        Subtask subtaskUpdate = subtaskList.get(subtask.getId());
+        subtaskUpdate.setTitle(subtask.getTitle());
+        subtaskUpdate.setDescription(subtask.getDescription());
+        subtaskUpdate.setStatus(subtask.getStatus());
         statusCalculationEpic(subtask);// пересчитываем статус Epic
     }
 

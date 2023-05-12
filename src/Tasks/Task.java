@@ -4,19 +4,18 @@ public class Task {
     protected String title;//Название, кратко описывающее суть задачи
     protected String description; //Описание, в котором раскрываются детали.
     protected int id;//Уникальный идентификационный номер задачи
-    protected String status;
+    protected StatusTask statusTask;
 
-
-    public Task(String title, String description,String status) {
+    public Task(String title, String description,StatusTask statusTask) {
         this.title = title;
         this.description = description;
-        this.status = status;
+        this.statusTask = statusTask;
     }
-    public Task(String title, String description, int id, String status) {
+    public Task(String title, String description, int id, StatusTask statusTask) {
         this.title = title;
         this.description = description;
         this.id = id;
-        this.status = status;
+        this.statusTask = statusTask;
     }
 
     public String getTitle() {
@@ -43,12 +42,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getStatus() {
-        return status;
+    public StatusTask getStatus() {
+        return statusTask;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(StatusTask statusTask) {
+        this.statusTask = statusTask;
     }
 
 
@@ -58,7 +57,7 @@ public class Task {
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", status='" + status + '\'' +
+                ", status='" + statusTask + '\'' +
                 '}' + "\n";
     }
 }

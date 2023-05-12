@@ -4,13 +4,17 @@ package Tasks;
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String title, String description,  String status, int epicId) {
-        super(title, description,status);
+    public Subtask(String title, String description,  StatusTask statusTask, int epicId,int subTaskId) {
+        super(title, description,subTaskId,statusTask);
+        this.epicId = epicId;
+    }
+    public Subtask(String title, String description,  StatusTask statusTask, int epicId) {
+        super(title, description,statusTask);
         this.epicId = epicId;
     }
 
-    public Subtask(String title, String description,String status) {
-        super(title, description,status);
+    public Subtask(String title, String description,StatusTask statusTask) {
+        super(title, description,statusTask);
 
     }
 
@@ -29,7 +33,7 @@ public class Subtask extends Task {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", status='" + status + '\'' +
+                ", status='" + statusTask + '\'' +
                 ",idEpic= " + epicId+
                 '}'+ "\n";
     }
