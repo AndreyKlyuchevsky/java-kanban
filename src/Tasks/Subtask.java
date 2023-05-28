@@ -30,7 +30,7 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "Subtask{" +
-                ", title='" + title + '\'' +
+                "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status='" + statusTask + '\'' +
