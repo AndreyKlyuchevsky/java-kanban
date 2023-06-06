@@ -2,6 +2,7 @@ import Managers.InMemoryTaskManager;
 import Managers.Managers;
 import Managers.TaskManager;
 import Tasks.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -9,10 +10,10 @@ public class Main {
         TaskManager inMemoryTaskManager = new Managers().getDefault();
 
 
-        Task task1 = new Task("Первая задача","очень важная первая задача",StatusTask.NEW);
-        Task task2 = new Task("Вторая задача","оычень важная вторая задача",StatusTask.NEW);
-        Epic epic1 = new Epic("Первая большая задача","очень важная первая большая задача");
-        Epic epic2 = new Epic("Вторая большая задача","очень важная вторая большая задача");
+        Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW);
+        Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW);
+        Epic epic1 = new Epic("Первая большая задача", "очень важная первая большая задача");
+        Epic epic2 = new Epic("Вторая большая задача", "очень важная вторая большая задача");
 
 
         //добавляем 2 простых задачи Task
@@ -24,10 +25,10 @@ public class Main {
         inMemoryTaskManager.addEpic(epic2);
 
         //создаем подзадачи
-        Subtask subtask1 = new Subtask("Первая подзадача","очень важная первая подзадача 1 Epic", StatusTask.DONE,epic1.getId());
-        Subtask subtask2 = new Subtask("Вторая подзадача","очень важная вторая подзадача 1 Epic",StatusTask.DONE,epic1.getId());
-        Subtask subtask5 = new Subtask("Вторая подзадача","очень важная вторая подзадача 1 Epic",StatusTask.DONE,epic1.getId());
-        Subtask subtask3 = new Subtask("Первая подзадача","оычень важная вторая подзадача 2 Epic",StatusTask.NEW,epic2.getId());
+        Subtask subtask1 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        Subtask subtask2 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        Subtask subtask5 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        Subtask subtask3 = new Subtask("Первая подзадача", "оычень важная вторая подзадача 2 Epic", StatusTask.NEW, epic2.getId());
 
         //добавляем в  Epic  подзадачи
         inMemoryTaskManager.addSubTask(subtask1);
@@ -38,14 +39,14 @@ public class Main {
         inMemoryTaskManager.addSubTask(subtask3);
 
         //печатаем Epic1
-        System.out.println(inMemoryTaskManager.getTaskToId(epic1.getId()));
+        System.out.println(inMemoryTaskManager.getTaskById(epic1.getId()));
 
         //меняем статус у Epic и description
         System.out.println("меняем статус у Epic и description");
-        Subtask subtask4 = new Subtask("Первая подзадача","очень важная первая подзадача 1 Epic", StatusTask.NEW,epic1.getId(),subtask1.getId());
+        Subtask subtask4 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.NEW, epic1.getId(), subtask1.getId());
         inMemoryTaskManager.updateSubTask(subtask4);
-        inMemoryTaskManager.updateEpic(new Epic("Первая большая задача","самая важная первая большая задача",epic1.getId()));
-        System.out.println(inMemoryTaskManager.getTaskToId(epic1.getId()));
+        inMemoryTaskManager.updateEpic(new Epic("Первая большая задача", "самая важная первая большая задача", epic1.getId()));
+        System.out.println(inMemoryTaskManager.getTaskById(epic1.getId()));
 
         //печатаем все задачи
         System.out.println("печатаем все задачи");

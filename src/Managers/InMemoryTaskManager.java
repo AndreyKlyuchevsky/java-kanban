@@ -4,15 +4,16 @@ import Tasks.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
-    private final HashMap<Integer, Task> taskList = new HashMap<>();
-    private final HashMap<Integer, Epic> epicList = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
-    private final ArrayList<Task> history = new ArrayList<>();
+    private final Map<Integer, Task> taskList = new HashMap<>();
+    private final Map<Integer, Epic> epicList = new HashMap<>();
+    private final Map<Integer, Subtask> subtaskList = new HashMap<>();
+    private HistoryManager history = new Managers().getDefaultHistory();
 
     private int getId() {// присвоили ID, увыеличиваем ID
         return id++;
@@ -75,30 +76,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) { //обновлем задачу (Epic)
         Epic updateEpics = epicList.get(epic.getId());
-        updateEpics.setTitle(epic.getTitle());
+        updateEpics.setName(epic.getName());
         updateEpics.setDescription(epic.getDescription());
     }
 
     @Override
     public void updateSubTask(Subtask subtask) {//обновлем подзадачу (Subtask)
         Subtask subtaskUpdate = subtaskList.get(subtask.getId());
-        subtaskUpdate.setTitle(subtask.getTitle());
+        subtaskUpdate.setName(subtask.getName());
         subtaskUpdate.setDescription(subtask.getDescription());
         subtaskUpdate.setStatus(subtask.getStatus());
         updateStatus(subtask.getEpicId());// пересчитываем статус Epic
     }
 
     @Override
-    public Task getTaskToId(int id) { //возвращаем объект по Id
+    public Task getTaskById(int id) { //возвращаем объект по Id
         if (taskList.containsKey(id)) {
-            setHistory(taskList.get(id));
+            history.add(taskList.get(id));
             return taskList.get(id);
         } else if (epicList.containsKey(id)) {
-            setHistory(epicList.get(id));
+            history.add(epicList.get(id));
             return epicList.get(id);
         } else
-            setHistory(subtaskList.get(id));
-            return subtaskList.getOrDefault(id, null);
+            history.add(subtaskList.get(id));
+        return subtaskList.getOrDefault(id, null);
     }
 
     @Override
@@ -193,19 +194,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    //добавляем элемент в историю просмотров
-    private void setHistory(Task tasks){
-        if(history.size()>=10){
-            history.remove(9);
-        }
-        history.add(0,tasks);
+    //возвращает инсторию просмотров
+    public ArrayList<Task> getHistory() {
+        return history.getHistory();
     }
-
-    //история просмотров
-    @Override
-    public ArrayList <Task> getHistory(){
-      return history;
-    }
-
 
 }

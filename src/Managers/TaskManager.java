@@ -29,7 +29,7 @@ public interface TaskManager {
     void updateSubTask(Subtask subtask);
 
     //возвращаем объект по Id
-    Task getTaskToId(int id);
+    Task getTaskById(int id);
 
     //возвращаем список подзадач конкретноко Epic
     ArrayList<Subtask> getSubTaskToEpic(Epic epic);
@@ -62,5 +62,5 @@ public interface TaskManager {
     void removeTaskToId(int id);
 
     //история просмотров
-    ArrayList <Task> getHistory();
+    ArrayList<Task> getHistory();
 }

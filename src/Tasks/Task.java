@@ -1,29 +1,30 @@
-package Tasks ;
+package Tasks;
 
 public class Task {
-    protected String title;//Название, кратко описывающее суть задачи
-    protected String description; //Описание, в котором раскрываются детали.
-    protected int id;//Уникальный идентификационный номер задачи
-    protected StatusTask statusTask;
+    protected String name;
+    protected String description;
+    protected int id;
+    protected StatusTask status;
 
-    public Task(String title, String description,StatusTask statusTask) {
-        this.title = title;
+    public Task(String name, String description, StatusTask status) {
+        this.name = name;
         this.description = description;
-        this.statusTask = statusTask;
+        this.status = status;
     }
-    public Task(String title, String description, int id, StatusTask statusTask) {
-        this.title = title;
+
+    public Task(String name, String description, int id, StatusTask status) {
+        this.name = name;
         this.description = description;
         this.id = id;
-        this.statusTask = statusTask;
+        this.status = status;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String title) {
+        this.name = title;
     }
 
     public String getDescription() {
@@ -43,21 +44,21 @@ public class Task {
     }
 
     public StatusTask getStatus() {
-        return statusTask;
+        return status;
     }
 
     public void setStatus(StatusTask statusTask) {
-        this.statusTask = statusTask;
+        this.status = statusTask;
     }
 
 
     @Override
     public String toString() {
         return "Task{" +
-                "title='" + title + '\'' +
+                "name ='" + name  + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", status='" + statusTask + '\'' +
+                ", status='" + status + '\'' +
                 '}' + "\n";
     }
 }
