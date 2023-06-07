@@ -62,7 +62,7 @@ public class Main {
 
         //удаляем Task
         System.out.println("удаляем Task");
-        inMemoryTaskManager.removeTaskToId(task1.getId());
+        inMemoryTaskManager.removeTaskById(task1.getId());
         System.out.println(inMemoryTaskManager.getAll());
         System.out.println("удаляем все Task");
         inMemoryTaskManager.removeTaskAll();
@@ -70,14 +70,14 @@ public class Main {
 
         //удаляем Subtask
         System.out.println("удаляем Subtask");
-        inMemoryTaskManager.removeTaskToId(subtask4.getId());
+        inMemoryTaskManager.removeTaskById(subtask4.getId());
         System.out.println(inMemoryTaskManager.getAll());
         inMemoryTaskManager.removeSubTaskAll();
         System.out.println(inMemoryTaskManager.getSubTaskAll());
 
         //удаляем Epic
         System.out.println("удаляем Epic");
-        inMemoryTaskManager.removeTaskToId(epic1.getId());
+        inMemoryTaskManager.removeTaskById(epic1.getId());
         System.out.println(inMemoryTaskManager.getAll());
         inMemoryTaskManager.removeEpicAll();
         System.out.println(inMemoryTaskManager.getEpicAll());

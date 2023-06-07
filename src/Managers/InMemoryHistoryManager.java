@@ -3,23 +3,23 @@ package Managers;
 import Tasks.Task;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+
 
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final ArrayList<Task> history = new ArrayList<>();
+    private final LinkedList<Task> history = new LinkedList<>();
 
-    //добавляем элемент в историю просмотров
     @Override
     public void add(Task task) {
-        if (history.size() >= 10) {
-            history.remove(9);
+        if (history.size() > 10) {
+            history.removeFirst();
         }
-        history.add(0, task);
+        history.add( task);
     }
 
-    //история просмотров
     @Override
     public ArrayList<Task> getHistory() {
-        return history;
+        return new ArrayList<>(history);
     }
 }
