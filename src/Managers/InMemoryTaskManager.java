@@ -173,15 +173,20 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTaskById(int id) {
         if (taskList.containsKey(id)) {
             taskList.remove(id);
+            history.remove(id);
         } else if (epicList.containsKey(id)) {
             for (Integer subtaskId : epicList.get(id).getSubtaskId()) {
                 subtaskList.remove(subtaskId);
+                history.remove(subtaskId);
             }
             epicList.remove(id);
+            history.remove(id);
         } else if (subtaskList.containsKey(id)) {
             int idEpic = subtaskList.get(id).getEpicId();
             epicList.get(idEpic).removeSubtaskId(id);
             subtaskList.remove(id);
+            history.remove(id);
+
             updateStatus(idEpic);
         }
     }

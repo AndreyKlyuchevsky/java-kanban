@@ -28,64 +28,38 @@ public class Main {
         Subtask subtask1 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
         Subtask subtask2 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
         Subtask subtask5 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
-        Subtask subtask3 = new Subtask("Первая подзадача", "оычень важная вторая подзадача 2 Epic", StatusTask.NEW, epic2.getId());
+
 
         //добавляем в  Epic  подзадачи
         inMemoryTaskManager.addSubTask(subtask1);
         inMemoryTaskManager.addSubTask(subtask2);
         inMemoryTaskManager.addSubTask(subtask5);
 
-        //добавляем в 4 Epic 1 подзадачу
-        inMemoryTaskManager.addSubTask(subtask3);
 
         //печатаем Epic1
-        System.out.println(inMemoryTaskManager.getTaskById(epic1.getId()));
+        System.out.println("Смотрим 1 Ерic");
+        inMemoryTaskManager.getTaskById(epic1.getId());
+        System.out.println(inMemoryTaskManager.getHistory());
 
-        //меняем статус у Epic и description
-        System.out.println("меняем статус у Epic и description");
-        Subtask subtask4 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.NEW, epic1.getId(), subtask1.getId());
-        inMemoryTaskManager.updateSubTask(subtask4);
-        inMemoryTaskManager.updateEpic(new Epic("Первая большая задача", "самая важная первая большая задача", epic1.getId()));
-        System.out.println(inMemoryTaskManager.getTaskById(epic1.getId()));
+        System.out.println("Смотрим 1,2 Task");
+        inMemoryTaskManager.getTaskById(task1.getId());
+        inMemoryTaskManager.getTaskById(task2.getId());
+        System.out.println(inMemoryTaskManager.getHistory());
 
-        //печатаем все задачи
-        System.out.println("печатаем все задачи");
-        System.out.println(inMemoryTaskManager.getAll());
-
-        //печатаем все задачи по очереди. В начале все Task, потом Epic, последним Subtask
-        System.out.println("Выводим все Task");
-        System.out.println(inMemoryTaskManager.getTaskAll());
-        System.out.println("Выводим все Epic");
-        System.out.println(inMemoryTaskManager.getEpicAll());
-        System.out.println("Выводим все Subtask");
-        System.out.println(inMemoryTaskManager.getSubTaskAll());
-
+        System.out.println("Смотрим 1 Ерic и подзадачи");
+        inMemoryTaskManager.getTaskById(epic1.getId());
+        inMemoryTaskManager.getTaskById(subtask1.getId());
+        inMemoryTaskManager.getTaskById(subtask2.getId());
+        inMemoryTaskManager.getTaskById(subtask5.getId());
+        System.out.println(inMemoryTaskManager.getHistory());
         //удаляем Task
         System.out.println("удаляем Task");
         inMemoryTaskManager.removeTaskById(task1.getId());
-        System.out.println(inMemoryTaskManager.getAll());
-        System.out.println("удаляем все Task");
-        inMemoryTaskManager.removeTaskAll();
-        System.out.println(inMemoryTaskManager.getTaskAll());
-
-        //удаляем Subtask
-        System.out.println("удаляем Subtask");
-        inMemoryTaskManager.removeTaskById(subtask4.getId());
-        System.out.println(inMemoryTaskManager.getAll());
-        inMemoryTaskManager.removeSubTaskAll();
-        System.out.println(inMemoryTaskManager.getSubTaskAll());
-
+        System.out.println(inMemoryTaskManager.getHistory());
         //удаляем Epic
         System.out.println("удаляем Epic");
         inMemoryTaskManager.removeTaskById(epic1.getId());
-        System.out.println(inMemoryTaskManager.getAll());
-        inMemoryTaskManager.removeEpicAll();
-        System.out.println(inMemoryTaskManager.getEpicAll());
-
-        //удаляем все задачи
-        inMemoryTaskManager.removeAll();
-        System.out.println("удаляем все задачи");
-        System.out.println(inMemoryTaskManager.getAll());
         System.out.println(inMemoryTaskManager.getHistory());
+        
     }
 }
