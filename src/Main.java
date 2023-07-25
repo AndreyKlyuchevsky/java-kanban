@@ -60,6 +60,6 @@ public class Main {
         System.out.println("удаляем Epic");
         inMemoryTaskManager.removeTaskById(epic1.getId());
         System.out.println(inMemoryTaskManager.getHistory());
-        
+
     }
 }
