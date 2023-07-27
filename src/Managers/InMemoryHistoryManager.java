@@ -30,8 +30,9 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else {
                 linkLast(task);
             }
+            size++;
         }
-        size++;
+
     }
 
     private void linkLast(Task task) {
@@ -78,8 +79,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (taskNode.containsKey(id)) {
             removeNode(taskNode.get(id));
             taskNode.remove(id);
+            size--;
         }
-        size--;
+
     }
 
 
