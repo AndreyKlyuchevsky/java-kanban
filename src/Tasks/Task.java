@@ -1,15 +1,23 @@
 package Tasks;
 
+import Managers.TaskType;
+
 public class Task {
     protected String name;
     protected String description;
     protected int id;
     protected StatusTask status;
+    private final TaskType type;
 
     public Task(String name, String description, StatusTask status) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.type=TaskType.TASK;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public Task(String name, String description, int id, StatusTask status) {
@@ -17,6 +25,7 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        this.type=TaskType.TASK;
     }
 
     public String getName() {
