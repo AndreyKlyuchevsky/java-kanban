@@ -37,8 +37,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
                 }
             }
 
-        } catch (IOException e) {
-            // Handle exceptions or create a new file if it doesn't exist
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
         }
 
     }
@@ -96,7 +96,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             fileWriter.write(historyToString());
             fileWriter.close();
         }catch (IOException exception){
-            System.out.println("");
+            System.out.println(exception.getMessage());
         }
     }
 
