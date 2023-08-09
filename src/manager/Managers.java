@@ -1,11 +1,14 @@
-package Managers;
+package manager;
+
+import manager.file.FileBackedTasksManager;
 
 import java.io.File;
 
 public class Managers {
 
     public TaskManager getDefault() {
-        return new FileBackedTasksManager(new File("C:/Users/andre/Desktop/Praktikum/java-kanban/filewriter.csv"));
+
+        return  FileBackedTasksManager.loadFromFile(new File("C:/Users/andre/Desktop/Praktikum/java-kanban/filewriter.csv"));
     }
 
     public HistoryManager getDefaultHistory() {

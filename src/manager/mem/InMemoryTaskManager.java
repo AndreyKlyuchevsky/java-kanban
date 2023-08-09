@@ -1,6 +1,12 @@
-package Managers;
+package manager.mem;
 
-import Tasks.*;
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
 
 import java.util.*;
 
@@ -11,6 +17,11 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Epic> epicList = new HashMap<>();
     protected final Map<Integer, Subtask> subtaskList = new HashMap<>();
     private final HistoryManager history = new Managers().getDefaultHistory();
+
+
+
+
+
 
     private int getId() {
         return id++;
@@ -129,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(subtaskList.values());
     }
 
-    @Override
+
     public ArrayList<Task> getAll() {
         ArrayList<Task> listTask = new ArrayList<>(taskList.values());
         for (Map.Entry<Integer, Epic> integerEpicEntry : epicList.entrySet()) {

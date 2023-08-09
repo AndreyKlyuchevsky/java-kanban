@@ -1,13 +1,15 @@
-import Managers.InMemoryTaskManager;
-import Managers.Managers;
-import Managers.TaskManager;
-import Tasks.*;
+import manager.Managers;
+import manager.TaskManager;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager inMemoryTaskManager = new Managers().getDefault();
+        TaskManager taskManager = new Managers().getDefault();
 
 
         Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW);
@@ -17,12 +19,12 @@ public class Main {
 
 
         //добавляем 2 простых задачи Task
-        inMemoryTaskManager.addTask(task1);
-        inMemoryTaskManager.addTask(task2);
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
 
         //добавляем Epic задачи
-        inMemoryTaskManager.addEpic(epic1);
-        inMemoryTaskManager.addEpic(epic2);
+        taskManager.addEpic(epic1);
+        taskManager.addEpic(epic2);
 
         //создаем подзадачи
         Subtask subtask1 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
@@ -31,35 +33,35 @@ public class Main {
 
 
         //добавляем в  Epic  подзадачи
-        inMemoryTaskManager.addSubTask(subtask1);
-        inMemoryTaskManager.addSubTask(subtask2);
-        inMemoryTaskManager.addSubTask(subtask5);
+        taskManager.addSubTask(subtask1);
+        taskManager.addSubTask(subtask2);
+        taskManager.addSubTask(subtask5);
 
 
         //печатаем Epic1
         System.out.println("Смотрим 1 Ерic");
-        inMemoryTaskManager.getTaskById(epic1.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        taskManager.getTaskById(epic1.getId());
+        System.out.println(taskManager.getHistory());
 
         System.out.println("Смотрим 1,2 Task");
-        inMemoryTaskManager.getTaskById(task1.getId());
-        inMemoryTaskManager.getTaskById(task2.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        System.out.println(taskManager.getHistory());
 
         System.out.println("Смотрим 1 Ерic и подзадачи");
-        inMemoryTaskManager.getTaskById(epic1.getId());
-        inMemoryTaskManager.getTaskById(subtask1.getId());
-        inMemoryTaskManager.getTaskById(subtask2.getId());
-        inMemoryTaskManager.getTaskById(subtask5.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        taskManager.getTaskById(epic1.getId());
+        taskManager.getTaskById(subtask1.getId());
+        taskManager.getTaskById(subtask2.getId());
+        taskManager.getTaskById(subtask5.getId());
+        System.out.println(taskManager.getHistory());
         //удаляем Task
         System.out.println("удаляем Task");
-        inMemoryTaskManager.removeTaskById(task1.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        taskManager.removeTaskById(task1.getId());
+        System.out.println(taskManager.getHistory());
         //удаляем Epic
         System.out.println("удаляем Epic");
-        inMemoryTaskManager.removeTaskById(epic1.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        taskManager.removeTaskById(epic1.getId());
+        System.out.println(taskManager.getHistory());
 
     }
 }

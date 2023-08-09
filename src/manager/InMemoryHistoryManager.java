@@ -1,6 +1,6 @@
-package Managers;
+package manager;
 
-import Tasks.Task;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +12,18 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> tail;
     private int size = 0;
     private final HashMap<Integer, Node<Task>> taskNode = new HashMap<>();
+
+    private static class Node <Task> {
+        public Task tasks;
+        public Node<Task> next;
+        public Node<Task> prev;
+
+        public Node(Node<Task> prev, Task tasks, Node<Task> next) {
+            this.tasks = tasks;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
 
 
     @Override

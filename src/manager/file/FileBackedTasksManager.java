@@ -1,52 +1,54 @@
-package Managers;
+package manager.file;
 
-import Tasks.Epic;
-import Tasks.StatusTask;
-import Tasks.Subtask;
-import Tasks.Task;
+import manager.mem.InMemoryTaskManager;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
+import model.TaskType;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTaskManager{
+public class FileBackedTasksManager extends InMemoryTaskManager {
     private File path;
-    private List<Task> tasks;
+    private String header = "id, type, name, status, description, epic";
 
     public FileBackedTasksManager(File path) {
         this.path = path;
-        this.tasks = new ArrayList<>();
-        loadTasksFromFile();
     }
+
+    public static FileBackedTasksManager loadFromFile(File file) {
+        FileBackedTasksManager manager = new FileBackedTasksManager(file);
+        loadTasksFromFile(manager);
+        return manager;
+    }
+
     //не проверял
-    private void loadTasksFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+    public static void loadTasksFromFile(FileBackedTasksManager manager) {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(manager.path))) {
             String line;
-            List<String> lines = new ArrayList<>();
-            while ((line=reader.readLine()) != null) {
-                lines.add(line);
-            }
-            for (int i = 1; i < lines.size(); i++) {
-                line=lines.get(i);
-                if(line.equals("")){
-                    historyFromString(lines.get(lines.size()-1));
+            while ((line = reader.readLine()) != null) {
+
+                if (line.equals("")) {
+                    historyFromString(reader.readLine(), manager);
                     break;
-                }else{
-                    taskFromString(lines.get(i));
+                } else {
+                    taskFromString(line, manager);
 
                 }
             }
 
         } catch (IOException exception) {
-            System.out.println(exception.getMessage());
+            throw new ManagerSaveException("file upload error " + manager.path, exception);
         }
 
     }
 
-    private void taskFromString(String line) {
+    private static void taskFromString(String line, FileBackedTasksManager manager) {
         String[] values = line.split(",");
         if (values.length < 5) {
-            return;
+            throw new IllegalArgumentException("Invalid format: " + line);
         }
 
         int id = Integer.parseInt(values[0]);
@@ -59,44 +61,46 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
         switch (type) {
             case TASK:
-                task = new Task( name,  description,id,status);
-                super.taskList.put(task.getId(),task);
+                task = new Task(name, description, id, status);
+                manager.taskList.put(task.getId(), task);
                 break;
             case EPIC:
-                task = new Epic(name,description ,id);
-                super.epicList.put(task.getId(), (Epic) task);
+                task = new Epic(name, description, id);
+                manager.epicList.put(task.getId(), (Epic) task);
                 break;
             case SUBTASK:
                 int epicId = Integer.parseInt(values[5]);
                 task = new Subtask(name, description, status, epicId, id);
-                super.subtaskList.put(task.getId(), (Subtask) task);
+                manager.subtaskList.put(task.getId(), (Subtask) task);
                 break;
         }
     }
 
 
-    public void historyFromString(String value) {
+    public static void historyFromString(String value, FileBackedTasksManager manager) {
 
         String[] ids = value.split(",");
         for (String id : ids) {
-            super.getTaskById(Integer.parseInt( id));
+            manager.getTaskById(Integer.parseInt(id));
         }
     }
 
 
     //методы для сохранения
-      public void save(){
-        try {
-            Writer fileWriter = new FileWriter(path);
-            fileWriter.write("id" + "," + "type" + "," + "name" + "," + "status" + "," + "description" + "," + "epic" + "\n");
+    public void save() {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path))) {
+            bufferedWriter.write(header);
+            bufferedWriter.newLine();
+
             for (Task task : super.getAll()) {
-                fileWriter.write(taskToString(task)+ "\n");
+                bufferedWriter.write(taskToString(task));
+                bufferedWriter.newLine();
             }
-            fileWriter.write("\n");
-            fileWriter.write(historyToString());
-            fileWriter.close();
-        }catch (IOException exception){
-            System.out.println(exception.getMessage());
+
+            bufferedWriter.newLine(); // Пустая строка
+            bufferedWriter.write(historyToString());
+        } catch (IOException exception) {
+            throw new ManagerSaveException("Failed to save tasks to file.", exception);
         }
     }
 
@@ -126,7 +130,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return task;
     }
 
-    public String historyToString() {
+    private String historyToString() {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (Task tasks : super.getHistory()) {
@@ -152,7 +156,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         super.updateSubTask(subtask);
         save();
     }
-
 
 
     @Override
@@ -203,4 +206,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         save();
     }
 
+    public static class ManagerSaveException extends RuntimeException {
+        public ManagerSaveException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }

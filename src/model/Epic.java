@@ -1,21 +1,18 @@
-package Tasks;
-
-import Managers.TaskType;
+package model;
 
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    protected ArrayList<Integer> subtaskId = new ArrayList<>();
-    private final TaskType type;
+    private ArrayList<Integer> subtaskId = new ArrayList<>();
 
     public Epic(String name, String description, int id) {
         super(name, description, id, StatusTask.NEW);
-        this.type= TaskType.EPIC;
+        type= TaskType.EPIC;
     }
 
     public Epic(String name, String description) {
         super(name, description, StatusTask.NEW);
-        this.type= TaskType.EPIC;
+        type= TaskType.EPIC;
     }
 
     public TaskType getType() {

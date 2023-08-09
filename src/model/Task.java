@@ -1,13 +1,11 @@
-package Tasks;
-
-import Managers.TaskType;
+package model;
 
 public class Task {
     protected String name;
     protected String description;
     protected int id;
     protected StatusTask status;
-    private final TaskType type;
+    protected TaskType type;
 
     public Task(String name, String description, StatusTask status) {
         this.name = name;
