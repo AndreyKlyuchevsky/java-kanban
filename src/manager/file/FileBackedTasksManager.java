@@ -11,7 +11,7 @@ import java.io.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private File path;
-    private String header = "id, type, name, status, description, epic";
+    private static String header = "id,type,name,status,description,epic";
 
     public FileBackedTasksManager(File path) {
         this.path = path;
@@ -33,13 +33,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 if (line.equals("")) {
                     historyFromString(reader.readLine(), manager);
                     break;
+                } else if (line.equals(header)) {
+                    break;
                 } else {
                     taskFromString(line, manager);
-
                 }
             }
 
-        } catch (IOException exception) {
+        } catch (
+                IOException exception) {
             throw new ManagerSaveException("file upload error " + manager.path, exception);
         }
 
