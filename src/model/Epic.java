@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
@@ -42,11 +43,11 @@ public class Epic extends Task {
         subtaskId.clear();
     }
 
-    public ArrayList<Integer> getSubtaskId() {
+    public List<Integer> getSubtaskIds() {
         return subtaskId;
     }
 
-    public void setSubtaskId(int subtaskId) {
+    public void addSubtaskId(int subtaskId) {
         this.subtaskId.add(subtaskId);
     }
 

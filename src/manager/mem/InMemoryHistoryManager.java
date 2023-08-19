@@ -89,13 +89,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
 
     @Override
-    public void removeAll() {
-        taskNode.clear();
-        tail = null;
-        head = null;
-    }
-
-    @Override
     public void remove(int id) {
         if (taskNode.containsKey(id)) {
             removeNode(taskNode.get(id));
