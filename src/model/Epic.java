@@ -1,18 +1,33 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtaskId = new ArrayList<>();
 
     public Epic(String name, String description, int id) {
         super(name, description, id, StatusTask.NEW);
-        type= TaskType.EPIC;
+        type = TaskType.EPIC;
     }
 
     public Epic(String name, String description) {
         super(name, description, StatusTask.NEW);
-        type= TaskType.EPIC;
+        type = TaskType.EPIC;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtaskId, epic.subtaskId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskId);
     }
 
     public TaskType getType() {
@@ -20,11 +35,7 @@ public class Epic extends Task {
     }
 
     public void removeSubtaskId(int id) {
-        for (int i = 0; i < subtaskId.size(); i++) {
-            if (subtaskId.get(i) == id) {
-                subtaskId.remove(i);
-            }
-        }
+        subtaskId.remove(id);
     }
 
     public void removeSubtaskAll() {
