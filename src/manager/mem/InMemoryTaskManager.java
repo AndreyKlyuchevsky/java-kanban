@@ -19,10 +19,6 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager history = new Managers().getDefaultHistory();
 
 
-
-
-
-
     private int getId() {
         return id++;
     }
@@ -102,7 +98,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskList.containsKey(id)) {
             history.add(taskList.get(id));
             return taskList.get(id);
-        }  else{
+        } else {
             return null;
         }
     }
@@ -112,7 +108,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicList.containsKey(id)) {
             history.add(epicList.get(id));
             return epicList.get(id);
-        }else{
+        } else {
             return null;
         }
     }
@@ -120,9 +116,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         if (subtaskList.containsKey(id)) {
-        history.add(subtaskList.get(id));
-        return subtaskList.getOrDefault(id, null);
-        }else{
+            history.add(subtaskList.get(id));
+            return subtaskList.getOrDefault(id, null);
+        } else {
             return null;
         }
     }
@@ -142,23 +138,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getTaskAll() {
+    public List<Task> getTaskAll() {
 
         return new ArrayList<>(taskList.values());
     }
 
     @Override
-    public ArrayList<Epic> getEpicAll() {
+    public List<Epic> getEpicAll() {
         return new ArrayList<>(epicList.values());
     }
 
     @Override
-    public ArrayList<Subtask> getSubTaskAll() {
+    public List<Subtask> getSubTaskAll() {
         return new ArrayList<>(subtaskList.values());
     }
 
 
-    public ArrayList<Task> getAll() {
+    public List<Task> getAll() {
         ArrayList<Task> listTask = new ArrayList<>(taskList.values());
         for (Map.Entry<Integer, Epic> integerEpicEntry : epicList.entrySet()) {
             listTask.add(integerEpicEntry.getValue());
@@ -231,9 +227,9 @@ public class InMemoryTaskManager implements TaskManager {
             history.remove(id);
         }
     }
-
-    public ArrayList<Task> getHistory() {
-        return (ArrayList<Task>) history.getHistory();
+    @Override
+    public List<Task> getHistory()  {
+        return history.getHistory();
     }
 
 }
