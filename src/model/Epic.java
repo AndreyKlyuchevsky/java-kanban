@@ -1,11 +1,15 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskId = new ArrayList<>();
+    private List<SubTask> subTaskList = new ArrayList<>();
+    private LocalDateTime endTime; // Рассчитываемое поле
 
     public Epic(String name, String description, int id) {
         super(name, description, id, StatusTask.NEW);
@@ -17,18 +21,48 @@ public class Epic extends Task {
         type = TaskType.EPIC;
     }
 
+
+    public void addSubtaskId(SubTask subtask) {
+        if (subtask != null && subtask.getId() > 0) {
+            this.subTaskList.add(subtask);
+
+        }
+    }
+
+    private void recalculate() {
+        startTime = subTaskList.stream()
+                .min(Comparator.comparing(Task::getStartTime))
+                .get()
+                .getStartTime();
+        endTime = subTaskList.stream()
+                .max(Comparator.comparing(Task::getStartTime))
+                .get()
+                .getStartTime();
+
+        duration = subTaskList.stream()
+                .mapToInt(Task::getDuration).sum();
+
+    }
+
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subtaskId, epic.subtaskId);
+        return Objects.equals(subTaskList, epic.subTaskList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subtaskId);
+        return Objects.hash(super.hashCode(), subTaskList);
     }
 
     public TaskType getType() {
@@ -36,20 +70,19 @@ public class Epic extends Task {
     }
 
     public void removeSubtaskId(int id) {
-        subtaskId.remove(id);
+        subTaskList.remove(id);
     }
 
     public void removeSubtaskAll() {
-        subtaskId.clear();
+        subTaskList.clear();
     }
 
     public List<Integer> getSubtaskIds() {
-        return subtaskId;
+        return subTaskList.stream()
+                .map(SubTask::getId)
+                .collect(Collectors.toList());
     }
 
-    public void addSubtaskId(int subtaskId) {
-        this.subtaskId.add(subtaskId);
-    }
 
     @Override
     public String toString() {
@@ -58,7 +91,7 @@ public class Epic extends Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status='" + status + '\'' +
-                ", subtaskId=" + subtaskId +
+                ", subtaskId=" + subTaskList +
                 '}' + "\n";
     }
 }

@@ -3,11 +3,11 @@ package model;
 
 import java.util.Objects;
 
-public class Subtask extends Task {
+public class SubTask extends Task {
     private int epicId;
 
 
-    public Subtask(String name, String description, StatusTask status, int epicId, int subTaskId) {
+    public SubTask(String name, String description, StatusTask status, int epicId, int subTaskId) {
         super(name, description, subTaskId, status);
         this.epicId = epicId;
         type= TaskType.SUBTASK;
@@ -18,7 +18,7 @@ public class Subtask extends Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Subtask subtask = (Subtask) o;
+        SubTask subtask = (SubTask) o;
         return epicId == subtask.epicId;
     }
 
@@ -31,13 +31,13 @@ public class Subtask extends Task {
         return type;
     }
 
-    public Subtask(String name, String description, StatusTask status, int epicId) {
+    public SubTask(String name, String description, StatusTask status, int epicId) {
         super(name, description, status);
         this.epicId = epicId;
         type= TaskType.SUBTASK;
     }
 
-    public Subtask(String name, String description, StatusTask status) {
+    public SubTask(String name, String description, StatusTask status) {
         super(name, description, status);
         type= TaskType.SUBTASK;
 

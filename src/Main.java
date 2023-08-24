@@ -1,7 +1,7 @@
 import manager.file.FileBackedTasksManager;
 import model.Epic;
 import model.StatusTask;
-import model.Subtask;
+import model.SubTask;
 import model.Task;
 
 import java.io.File;
@@ -26,9 +26,9 @@ public class Main {
         taskManagerOld.addEpic(epic2);
 
         //создаем подзадачи
-        Subtask subtask1 = new Subtask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
-        Subtask subtask2 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
-        Subtask subtask5 = new Subtask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        SubTask subtask1 = new SubTask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        SubTask subtask2 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        SubTask subtask5 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
 
 
         //добавляем в  Epic  подзадачи
