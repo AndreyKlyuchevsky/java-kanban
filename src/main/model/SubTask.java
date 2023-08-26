@@ -1,17 +1,26 @@
 package model;
 
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
     private int epicId;
 
 
-    public SubTask(String name, String description, StatusTask status, int epicId, int subTaskId) {
-        super(name, description, subTaskId, status);
+    public SubTask(String name, String description, StatusTask status, int epicId, int subTaskId,int duration, LocalDateTime startTime) {
+        super(name, description, subTaskId, status,duration,startTime);
         this.epicId = epicId;
-        type= TaskType.SUBTASK;
+        type = TaskType.SUBTASK;
     }
+
+    public SubTask(String name, String description, StatusTask status, int subTaskId,int duration, LocalDateTime startTime) {
+        super(name, description, subTaskId, status,duration,startTime);
+        type = TaskType.SUBTASK;
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -31,17 +40,7 @@ public class SubTask extends Task {
         return type;
     }
 
-    public SubTask(String name, String description, StatusTask status, int epicId) {
-        super(name, description, status);
-        this.epicId = epicId;
-        type= TaskType.SUBTASK;
-    }
 
-    public SubTask(String name, String description, StatusTask status) {
-        super(name, description, status);
-        type= TaskType.SUBTASK;
-
-    }
 
 
     public int getEpicId() {

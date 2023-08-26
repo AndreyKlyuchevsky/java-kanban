@@ -10,7 +10,6 @@ import model.Task;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -50,10 +49,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void validateTaskDurationInterval(Task task) {
         for (Task prioritizedTask : getPrioritizedTasks()) {
-           if(isDateTimeBetween(task.getStartTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime()) ||
-            isDateTimeBetween(task.getEndTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime())){
-               throw new IllegalArgumentException("Invalid task duration interval: " + task);
-           }
+            if (isDateTimeBetween(task.getStartTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime()) ||
+                    isDateTimeBetween(task.getEndTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime())) {
+                throw new IllegalArgumentException("Invalid task duration interval: " + task);
+            }
         }
     }
 
@@ -65,7 +64,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(new TreeSet<>(Comparator.comparing(Task::getStartTime)));
+        TreeSet <Task> taskTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        taskTreeSet.addAll(getTaskAll());
+        return new ArrayList<>(taskTreeSet);
     }
 
     public void updateStatus(int EpicId) {

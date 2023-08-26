@@ -48,5 +48,6 @@ public interface TaskManager {
     void removeEpicById(int id);
 
     List<Task> getHistory();
+
     List<Task> getPrioritizedTasks();
 }

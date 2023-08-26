@@ -5,14 +5,15 @@ import model.SubTask;
 import model.Task;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         FileBackedTasksManager taskManagerOld = new FileBackedTasksManager(new File("filewriter.csv"));
 
-        Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW);
-        Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW);
+        Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW,8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
+        Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW,8,LocalDateTime.of(2023, 9, 8, 00, 00, 00));
         Epic epic1 = new Epic("Первая большая задача", "очень важная первая большая задача");
         Epic epic2 = new Epic("Вторая большая задача", "очень важная вторая большая задача");
 
@@ -26,9 +27,9 @@ public class Main {
         taskManagerOld.addEpic(epic2);
 
         //создаем подзадачи
-        SubTask subtask1 = new SubTask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
-        SubTask subtask2 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
-        SubTask subtask5 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId());
+        SubTask subtask1 = new SubTask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId(),8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
+        SubTask subtask2 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId(),2, LocalDateTime.of(2023, 9, 15, 00, 00, 00));
+        SubTask subtask5 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId(),15, LocalDateTime.of(2023, 9, 21, 00, 00, 00));
 
 
         //добавляем в  Epic  подзадачи

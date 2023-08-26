@@ -9,7 +9,7 @@ public class Task {
     protected int id;
     protected StatusTask status;
     protected TaskType type;
-    protected int duration ;
+    protected int duration;
     protected LocalDateTime startTime;
 
 
@@ -23,11 +23,23 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public Task(String name, String description, StatusTask status) {
+    public Task(String name, String description, StatusTask status,int duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(String name, String description, int id, StatusTask status,int duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Task(String name, String description, int id, StatusTask status) {
@@ -35,7 +47,12 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
-        this.type = TaskType.TASK;
+    }
+
+    public Task(String name, String description, StatusTask status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
     public TaskType getType() {

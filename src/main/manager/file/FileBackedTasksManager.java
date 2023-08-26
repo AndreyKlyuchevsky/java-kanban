@@ -1,17 +1,14 @@
 package manager.file;
 
 import manager.mem.InMemoryTaskManager;
-import model.Epic;
-import model.StatusTask;
-import model.SubTask;
-import model.Task;
-import model.TaskType;
+import model.*;
 
 import java.io.*;
+import java.time.LocalDateTime;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File path;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,duration,startTime";
 
 
     public FileBackedTasksManager(File path) {
@@ -57,21 +54,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = values[2];
         StatusTask status = StatusTask.valueOf(values[3]);
         String description = values[4];
-
+        int duration= Integer.parseInt(values[6]);
+        LocalDateTime startTime= LocalDateTime.parse(values[7]);
         Task task;
 
         switch (type) {
             case TASK:
-                task = new Task(name, description, id, status);
+                task = new Task(name, description, id, status,duration,startTime);
                 manager.taskList.put(task.getId(), task);
                 break;
             case EPIC:
-                task = new Epic(name, description, id);
+                task = new Epic(name, description, id,duration,startTime);
                 manager.epicList.put(task.getId(), (Epic) task);
                 break;
             case SUBTASK:
                 int epicId = Integer.parseInt(values[5]);
-                task = new SubTask(name, description, status, epicId, id);
+                task = new SubTask(name, description, status, epicId, id,duration,startTime);
                 manager.subtaskList.put(task.getId(), (SubTask) task);
                 break;
         }
@@ -117,9 +115,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 + task.getDescription() + ",";
         if (task.getType() == TaskType.SUBTASK) {
             SubTask subTask = (SubTask) task;
-            line = line + subTask.getEpicId() + ",";
+            line = line + subTask.getEpicId() + ","
+                    +task.getDuration() + ","
+                    +task.getStartTime() + ",";
         } else {
-            line = line + ",";
+            line = line + ","
+                    +task.getDuration() + ","
+                    +task.getStartTime() + ",";
         }
         return line;
     }
