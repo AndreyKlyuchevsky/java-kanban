@@ -272,7 +272,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("вернуть SubTask задачу")
-    public void getSubtaskByIdTest()  {
+    public void getSubtaskByIdTest() {
         manager.addEpic(epic);
         subTask1.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
@@ -285,21 +285,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("вернуть SubTask конкретного Epic")
-    public void getSubtaskEpicTest()  {
+    public void getSubtaskEpicTest() {
         manager.addEpic(epic);
         subTask1.setEpicId(epic.getId());
         subTask2.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         final int subtaskId = subTask1.getId();
-        final List <SubTask> subsTaskList = manager.getSubTaskEpic(epic);
+        final List<SubTask> subsTaskList = manager.getSubTaskEpic(epic);
 
         assertEquals(2, subsTaskList.size(), "Неверное количество задач.");
     }
 
     @Test
     @DisplayName("вернуть SubTask")
-    public void getSubtaskAllTest()  {
+    public void getSubtaskAllTest() {
         manager.addEpic(epic);
         subTask1.setEpicId(epic.getId());
         subTask2.setEpicId(epic.getId());
@@ -312,14 +312,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("обновляем SubTask")
-    public void updateSubTaskTest()  {
+    public void updateSubTaskTest() {
         manager.addEpic(epic);
         subTask1.setEpicId(epic.getId());
         subTask2.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         final int subtaskId = subTask1.getId();
-        SubTask subTask3 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.DONE,subtaskId, epic.getId(), 12, LocalDateTime.of(2023, 9, 9, 00, 00, 00));
+        SubTask subTask3 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.DONE, subtaskId, epic.getId(), 12, LocalDateTime.of(2023, 9, 9, 00, 00, 00));
         manager.updateSubTask(subTask3);
         final SubTask savedSubTask = manager.getSubtaskById(subtaskId);
 
@@ -390,5 +390,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(StatusTask.DONE, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
     }
 
-    
+    @Test
+    @DisplayName("тест на пересечение времени")
+    void ValidateTaskDurationIntervalTest() {
+
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 8, 1, 10, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 8, 1, 11, 0);
+        int duration = 24;
+        Task task1 = new Task("Task 1", "Description 1", StatusTask.NEW, duration, startTime1);
+        manager.addTask(task1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Task task2 = new Task("Task 2", "Description 2", StatusTask.NEW, duration, startTime1);
+            manager.addTask(task2);
+        });
+
+
+
+    }
 }
