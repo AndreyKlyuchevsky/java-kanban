@@ -1,7 +1,4 @@
 id,type,name,status,description,epic,duration,startTime
-2,TASK,Test addNewTask,NEW,Test addNewTask description,,40,2023-09-08T00:00,
-1,EPIC,Test addNewTask,NEW,Test addNewTask description,,20,2023-09-09T00:00,
-3,SUBTASK,Test addNewTask,NEW,Test addNewTask description,1,8,2023-09-18T00:00,
-4,SUBTASK,Test addNewTask,NEW,Test addNewTask description,1,12,2023-09-09T00:00,
+1,TASK,Test addNewTask,NEW,Test addNewTask description,,40,2023-09-08T00:00,
+2,TASK,Test addNewTask,NEW,Test addNewTask description,,40,2023-09-09T00:00,
 
-1,2,3,4,

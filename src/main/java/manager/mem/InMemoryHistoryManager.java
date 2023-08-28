@@ -51,8 +51,14 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else if (taskNode.containsKey(task.getId())) {
                 removeNode(taskNode.get(task.getId()));
                 taskNode.remove(task.getId());
-                linkLast(task);
-
+                if (taskNode.size() == 0){
+                    final Node<Task> newNode = new Node<>(null, task, null);
+                    head = newNode;
+                    tail = newNode;
+                    taskNode.put(task.getId(), newNode);
+                }else{
+                    linkLast(task);
+                }
             } else {
                 linkLast(task);
             }

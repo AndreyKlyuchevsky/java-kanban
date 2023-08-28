@@ -109,6 +109,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (task==null){
             throw new IllegalArgumentException("Задача должна быть заполнена");
+        }else if(!taskMap.containsKey(task.getId())){
+            throw new IllegalArgumentException("Задача не найдена");
         }
         validateTaskDurationInterval(task);
         taskMap.put(task.getId(), task);
@@ -118,6 +120,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         if (epic==null){
             throw new IllegalArgumentException("Задача должна быть заполнена");
+        }else if(!epicMap.containsKey(epic.getId())){
+            throw new IllegalArgumentException("Задача не найдена");
         }
         Epic updateEpics = epicMap.get(epic.getId());
         updateEpics.setName(epic.getName());
@@ -128,6 +132,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubTask(SubTask subtask) {
         if (subtask==null){
             throw new IllegalArgumentException("Задача должна быть заполнена");
+        }else if(!subTaskMap.containsKey(subtask.getId())){
+            throw new IllegalArgumentException("Задача не найдена");
         }
         validateTaskDurationInterval(subtask);
         subTaskMap.put(subtask.getId(), subtask);

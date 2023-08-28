@@ -72,8 +72,14 @@ public class Epic extends Task {
     }
 
     public void removeSubtaskId(int id) {
-        subTaskList.remove(id);
-        recalculate();
+        for (int i = 0; i < subTaskList.size(); i++) {
+           if(subTaskList.get(i).getId()!=id){
+               break;
+            }
+            subTaskList.remove(i);
+            recalculate();
+        }
+
     }
 
     public void removeSubtaskAll() {

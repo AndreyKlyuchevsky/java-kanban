@@ -12,17 +12,6 @@ public class Task {
     protected int duration;
     protected LocalDateTime startTime;
 
-
-    public Task(String name, String description, int id, StatusTask status, TaskType type, int duration, LocalDateTime startTime) {
-        this.name = name;
-        this.description = description;
-        this.id = id;
-        this.status = status;
-        this.type = type;
-        this.duration = duration;
-        this.startTime = startTime;
-    }
-
     public Task(String name, String description, StatusTask status,int duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
