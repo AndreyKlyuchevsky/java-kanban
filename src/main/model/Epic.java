@@ -20,7 +20,10 @@ public class Epic extends Task {
         super(name, description, StatusTask.NEW);
         type = TaskType.EPIC;
     }
-
+    public Epic(String name, String description,int id) {
+        super(name, description, id,StatusTask.NEW);
+        type = TaskType.EPIC;
+    }
 
     public void addSubtaskId(SubTask subtask) {
         if (subtask != null && subtask.getId() > 0) {

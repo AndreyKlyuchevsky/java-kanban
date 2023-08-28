@@ -24,16 +24,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @BeforeEach // ревьюрер предлагал создать метод BeforeEach
     protected void init() {
-        task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40,LocalDateTime.of(2023, 9, 8, 00, 00, 00));
+        task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
         epic = new Epic("Test addNewTask", "Test addNewTask description");
-        subTask1 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),8,LocalDateTime.of(2023, 9, 18, 00, 00, 00));
-        subTask2 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),12,LocalDateTime.of(2023, 9, 9, 00, 00, 00));
+        subTask1 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 8, LocalDateTime.of(2023, 9, 18, 00, 00, 00));
+        subTask2 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 12, LocalDateTime.of(2023, 9, 9, 00, 00, 00));
 
     }
 
     @Test
     @DisplayName("добавляем Task задачу")
-    public void addTaskTest()  {
+    public void addTaskTest() {
         manager.addTask(task);
         final int taskId = task.getId();
         final Task savedTask = manager.getTaskById(taskId);
@@ -52,7 +52,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("вернуть Task задачу")
-    public void getTaskById()  {
+    public void getTaskById() {
         manager.addTask(task);
         final int taskId = task.getId();
         final Task savedTask = manager.getTaskById(taskId);
@@ -60,12 +60,24 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(task, savedTask, "Задачи не совпадают.");
     }
 
-
+    @Test
+    @DisplayName("обновляем Task задачу")
+    public void getUpdateTask() {
+        manager.addTask(task);
+        final int taskId = task.getId();
+        Task savedTask = manager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask, "Задачи не совпадают.");
+        Task taskNew = new Task("Test addNewTask", "Test addNewTask description", taskId, StatusTask.DONE, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
+        manager.updateTask(taskNew);
+        Task savedTasknew = manager.getTaskById(taskId);
+        assertEquals(taskNew, savedTasknew, "Задачи не совпадают.");
+    }
 
 
     @Test
     @DisplayName("удаляем Task задачу")
-    public void removeTaskTest()  {
+    public void removeTaskTest() {
         manager.addTask(task);
         final int taskId = task.getId();
         List<Task> tasks = manager.getTaskAll();
@@ -113,6 +125,29 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 assertEquals(epic, epics, "Задачи не совпадают.");
             }
         }
+    }
+
+    @Test
+    @DisplayName("вернуть Epic задачу")
+    public void getEpicById() {
+        manager.addEpic(epic);
+        final int epicId = epic.getId();
+        final Epic savedEpic = manager.getEpicById(epicId);
+        assertNotNull(savedEpic, "Задача не найдена.");
+        assertEquals(epic, savedEpic, "Задачи не совпадают.");
+    }
+
+    @Test
+    @DisplayName("обновляем Epic задачу")
+    public void getUpdateEpic() {
+        manager.addEpic(epic);
+        final int epicId = epic.getId();
+        final Epic savedEpic = manager.getEpicById(epicId);
+        assertNotNull(savedEpic, "Задача не найдена.");
+        assertEquals(epic, savedEpic, "Задачи не совпадают.");
+        Epic epicNew = new Epic("Test addNewTask new", "Test addNewTask description", epicId);
+        manager.updateEpic(epicNew);
+        assertEquals(epicNew, savedEpic, "Задачи не совпадают.");
     }
 
     @Test
@@ -180,4 +215,19 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         //проверяем статус epic - должен быть DONE
         assertEquals(StatusTask.DONE, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
     }
+
+
+//    @Test
+//    @DisplayName("вернуть SubTask задачу")
+//    public void getSubtaskById()  {
+//        manager.addEpic(epic);
+//        subTask1.setEpicId(epic.getId());
+//        manager.addSubTask(subTask1);
+//        final int subtaskId = subTask1.getId();
+//        final SubTask savedSubTask = manager.getSubtaskById(subtaskId);
+//        assertNotNull(savedSubTask, "Задача не найдена.");
+//        assertEquals(subTask1, savedSubTask, "Задачи не совпадают.");
+//    }
+
+
 }
