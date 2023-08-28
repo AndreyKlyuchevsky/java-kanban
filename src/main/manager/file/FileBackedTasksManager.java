@@ -36,6 +36,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     taskFromString(line, manager);
                 }
             }
+            for (SubTask subtask : manager.subTaskMap.values()) {
+                manager.epicMap.get(subtask.getEpicId()).addSubtaskId(subtask);
+                manager.updateStatus(subtask.getEpicId());
+            }
         } catch (IOException exception) {
             throw new ManagerSaveException("file upload error " + manager.path, exception);
         }
@@ -61,27 +65,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         switch (type) {
             case TASK:
                 task = new Task(name, description, id, status,duration,startTime);
-                manager.taskList.put(task.getId(), task);
+                manager.taskMap.put(task.getId(), task);
                 break;
             case EPIC:
                 task = new Epic(name, description, id,duration,startTime);
-                manager.epicList.put(task.getId(), (Epic) task);
+                manager.epicMap.put(task.getId(), (Epic) task);
                 break;
             case SUBTASK:
                 int epicId = Integer.parseInt(values[5]);
                 task = new SubTask(name, description, status, epicId, id,duration,startTime);
-                manager.subtaskList.put(task.getId(), (SubTask) task);
+                manager.subTaskMap.put(task.getId(), (SubTask) task);
                 break;
         }
-        for (SubTask subtask : manager.subtaskList.values()) {
-            manager.epicList.get(subtask.getEpicId()).addSubtaskId(subtask);
-            manager.updateStatus(subtask.getEpicId());
-        }
+
     }
 
 
     public static void historyFromString(String value, FileBackedTasksManager manager) {
-
+       if(value==null){
+           return;
+       }
         String[] ids = value.split(",");
         for (String id : ids) {
             manager.getTaskById(Integer.parseInt(id));

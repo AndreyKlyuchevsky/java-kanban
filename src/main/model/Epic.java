@@ -25,11 +25,11 @@ public class Epic extends Task {
     public void addSubtaskId(SubTask subtask) {
         if (subtask != null && subtask.getId() > 0) {
             this.subTaskList.add(subtask);
-
+            recalculate();
         }
     }
 
-    private void recalculate() {
+    public void recalculate() {
         startTime = subTaskList.stream()
                 .min(Comparator.comparing(Task::getStartTime))
                 .get()
@@ -41,7 +41,6 @@ public class Epic extends Task {
 
         duration = subTaskList.stream()
                 .mapToInt(Task::getDuration).sum();
-
     }
 
 
@@ -71,10 +70,12 @@ public class Epic extends Task {
 
     public void removeSubtaskId(int id) {
         subTaskList.remove(id);
+        recalculate();
     }
 
     public void removeSubtaskAll() {
         subTaskList.clear();
+        recalculate();
     }
 
     public List<Integer> getSubtaskIds() {

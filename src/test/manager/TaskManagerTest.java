@@ -16,25 +16,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
-    private Task task;
-    private Epic epic;
-    private SubTask subTask1;
-    private SubTask subTask2;
+    protected Task task;
+    protected Epic epic;
+    protected SubTask subTask1;
+    protected SubTask subTask2;
     protected T manager;
 
     @BeforeEach // ревьюрер предлагал создать метод BeforeEach
-    private void init() {
+    protected void init() {
         task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40,LocalDateTime.of(2023, 9, 8, 00, 00, 00));
         epic = new Epic("Test addNewTask", "Test addNewTask description");
-        subTask1 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),8,LocalDateTime.of(2023, 16, 8, 00, 00, 00));
-        subTask2 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),12,LocalDateTime.of(2023, 25, 8, 00, 00, 00));
+        subTask1 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),8,LocalDateTime.of(2023, 9, 18, 00, 00, 00));
+        subTask2 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(),12,LocalDateTime.of(2023, 9, 9, 00, 00, 00));
 
     }
 
     @Test
     @DisplayName("добавляем Task задачу")
-    public void addTaskTest() throws IOException {
-        init();
+    public void addTaskTest()  {
         manager.addTask(task);
         final int taskId = task.getId();
         final Task savedTask = manager.getTaskById(taskId);
@@ -52,9 +51,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+    @DisplayName("вернуть Task задачу")
+    public void getTaskById()  {
+        manager.addTask(task);
+        final int taskId = task.getId();
+        final Task savedTask = manager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask, "Задачи не совпадают.");
+    }
+
+
+
+
+    @Test
     @DisplayName("удаляем Task задачу")
-    public void removeTaskTest() throws IOException {
-        init();
+    public void removeTaskTest()  {
         manager.addTask(task);
         final int taskId = task.getId();
         List<Task> tasks = manager.getTaskAll();
@@ -68,7 +79,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     @DisplayName("удаляем Task задачу не существующую")
     public void removeNullTaskTest() throws IOException {
-        init();
         try {
             manager.removeTaskById(8);
         } catch (NullPointerException exception) {
@@ -79,7 +89,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     @DisplayName("удаляем Task задачу не существующую")
     public void removeNullEpicTest() throws IOException {
-        init();
         try {
             manager.removeEpicById(100);
         } catch (NullPointerException exception) {
@@ -91,7 +100,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     @DisplayName("добавляем Epic задачу")
     public void addEpicTest() throws IOException {
-        init();
         manager.addEpic(epic);
         final int epicId = epic.getId();
         final Epic savedEpic = manager.getEpicById(epicId);
@@ -110,7 +118,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     @DisplayName("удаляем Epic задачу")
     public void removeEpicTest() throws IOException {
-        init();
         manager.addEpic(epic);
         final int epicId = epic.getId();
         List<Epic> epics = manager.getEpicAll();
@@ -124,7 +131,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     @DisplayName("добавляем SubTask задачу")
     public void addSubTaskTest() throws IOException {
-        init();
         manager.addEpic(epic);
         //проверяем список подзадач у epic. Должен быть 0
         final List<SubTask> subTaskNull = manager.getSubTaskAll();
@@ -138,6 +144,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         //проверяем статус epic - должен быть NEW
         assertEquals(StatusTask.NEW, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
         //добавляем подзадачу
+        subTask1.setEpicId(epic.getId());
+        subTask2.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         final int subTaskId = subTask1.getId();
