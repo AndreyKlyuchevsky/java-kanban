@@ -98,7 +98,7 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         if (startTime != null) {
-            return startTime.plusMinutes(duration);
+            return startTime.plusHours(duration);
         }
         return null;
     }

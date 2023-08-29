@@ -54,18 +54,32 @@ public class InMemoryTaskManager implements TaskManager {
             if(prioritizedTask.getId()==task.getId()){
                 continue;
             }
-            if (isDateTimeBetween(task.getStartTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime()) ||
-                    isDateTimeBetween(task.getEndTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime())) {
-                throw new IllegalArgumentException("Invalid task duration interval: " + task);
-            }
+//            if (isDateTimeBetween(task.getStartTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime()) ||
+//                    isDateTimeBetween(task.getEndTime(), prioritizedTask.getStartTime(), prioritizedTask.getEndTime())) {
+//                throw new IllegalArgumentException("Invalid task duration interval: " + task);
+//            }
+            if (isDateTimeBetween(task, prioritizedTask)) {
+               throw new IllegalArgumentException("Invalid task duration interval: " + task);
+           }
+
         }
     }
 
+    private boolean isDateTimeBetween(Task task1, Task task2) {
+        LocalDateTime start1 = task1.getStartTime();
+        LocalDateTime end1 = task1.getEndTime();
+        LocalDateTime start2 = task2.getStartTime();
+        LocalDateTime end2 = task2.getEndTime();
 
-    private boolean isDateTimeBetween(LocalDateTime date, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return (date.isEqual(startDateTime) || date.isAfter(startDateTime)) &&
-                (date.isEqual(endDateTime) || date.isBefore(endDateTime));
+        return !(end1.isBefore(start2) || start1.isAfter(end2));
+
     }
+
+    
+//    private boolean isDateTimeBetween(LocalDateTime date, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+//        return (date.isEqual(startDateTime) || date.isAfter(startDateTime)) &&
+//                (date.isEqual(endDateTime) || date.isBefore(endDateTime));
+//    }
 
     @Override
     public List<Task> getPrioritizedTasks() {

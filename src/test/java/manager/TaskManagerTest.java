@@ -399,12 +399,17 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         int duration = 24;
         Task task1 = new Task("Task 1", "Description 1", StatusTask.NEW, duration, startTime1);
         manager.addTask(task1);
+        //тест на вложенность времени. Когда временной интервал 3 задачи полностью поподает в первый
         assertThrows(IllegalArgumentException.class, () -> {
             Task task2 = new Task("Task 2", "Description 2", StatusTask.NEW, duration, startTime1);
             manager.addTask(task2);
         });
 
+        //тест на вложенность времени. Когда временной интервал 3 задачи полностью поподает в первый
+        Task task3 = new Task("Task 3", "Description 3", StatusTask.NEW, 5, startTime2);
 
-
+        assertThrows(IllegalArgumentException.class, () -> {
+            manager.addTask(task3);
+        });
     }
 }
