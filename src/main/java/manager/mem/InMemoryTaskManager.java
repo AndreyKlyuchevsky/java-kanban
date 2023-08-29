@@ -29,14 +29,13 @@ public class InMemoryTaskManager implements TaskManager {
         validateTaskDurationInterval(task);
         task.setId(getId());
         taskMap.put(task.getId(), task);
-        resetTaskTreeSet();
+        resetTaskTreeSet(task);
     }
 
     @Override
     public void addEpic(Epic epic) {
         epic.setId(getId());
         epicMap.put(epic.getId(), epic);
-        resetTaskTreeSet();
     }
 
     @Override
@@ -46,7 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicMap.get(subtask.getEpicId()).addSubtaskId(subtask);
         subTaskMap.put(subtask.getId(), subtask);
         updateStatus(subtask.getEpicId());
-        resetTaskTreeSet();
+        resetTaskTreeSet(subtask);
     }
 
     private void validateTaskDurationInterval(Task task) {
@@ -86,11 +85,18 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(taskTreeSet);
     }
 
-    private void resetTaskTreeSet(){
-        taskTreeSet.clear();
-        taskTreeSet.addAll(getTaskAll());
+    private void resetTaskTreeSet(Task task){
+        if (!taskTreeSet.contains(task)) {
+            taskTreeSet.remove(task);
+        }
+        taskTreeSet.add(task);
     }
 
+    private void removeTaskTreeSet(Task task){
+        if (!taskTreeSet.contains(task)) {
+            taskTreeSet.remove(task);
+        }
+    }
 
     public void updateStatus(int EpicId) {
         Epic epic = epicMap.get(EpicId);
@@ -126,8 +132,9 @@ public class InMemoryTaskManager implements TaskManager {
         }else if(!taskMap.containsKey(task.getId())){
             throw new IllegalArgumentException("Задача не найдена");
         }
-        validateTaskDurationInterval(task);
+        removeTaskTreeSet(taskMap.get(task.getId()));
         taskMap.put(task.getId(), task);
+        resetTaskTreeSet(task);
     }
 
     @Override
@@ -150,7 +157,9 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IllegalArgumentException("Задача не найдена");
         }
         validateTaskDurationInterval(subtask);
+        removeTaskTreeSet(subTaskMap.get(subtask.getId()));
         subTaskMap.put(subtask.getId(), subtask);
+        resetTaskTreeSet(subtask);
         updateStatus(subtask.getEpicId());
         if(subtask.getEpicId()>0){
             epicMap.get(subtask.getEpicId()).recalculate();
@@ -236,6 +245,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTaskAll() {
         for (Integer value : taskMap.keySet()) {
             history.remove(value);
+            removeTaskTreeSet(taskMap.get(value));
         }
         taskMap.clear();
     }
@@ -252,6 +262,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubTaskAll() {
         for (Integer value : subTaskMap.keySet()) {
+            removeTaskTreeSet(subTaskMap.get(value));
             history.remove(value);
         }
         subTaskMap.clear();
@@ -266,6 +277,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTaskById(int id) {
         if (taskMap.containsKey(id)) {
+            removeTaskTreeSet(taskMap.get(id));
             taskMap.remove(id);
             history.remove(id);
         }
@@ -276,9 +288,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTaskMap.containsKey(id)) {
             int idEpic = subTaskMap.get(id).getEpicId();
             epicMap.get(idEpic).removeSubtaskId(id);
+            removeTaskTreeSet(subTaskMap.get(id));
             subTaskMap.remove(id);
             history.remove(id);
-
             updateStatus(idEpic);
         }
     }

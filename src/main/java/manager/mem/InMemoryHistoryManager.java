@@ -36,11 +36,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(head, tail, taskNode);
-    }
-
-    @Override
     public void add(Task task) {
         if (task != null) {
             if (taskNode.size() == 0 || (head.tasks.equals(task) && tail.tasks.equals(task))) {
