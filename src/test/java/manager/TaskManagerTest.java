@@ -7,8 +7,6 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -112,7 +110,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("удаляем Task задачу не существующую")
-    public void removeNullTaskTest() throws IOException {
+    public void removeNullTaskTest()  {
         try {
             manager.removeTaskById(8);
         } catch (NullPointerException exception) {
@@ -122,7 +120,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("удаляем Task задачу не существующую")
-    public void removeNullEpicTest() throws IOException {
+    public void removeNullEpicTest()  {
         try {
             manager.removeEpicById(100);
         } catch (NullPointerException exception) {
@@ -133,7 +131,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("добавляем Epic задачу")
-    public void addEpicTest() throws IOException {
+    public void addEpicTest()  {
         manager.addEpic(epic);
         final int epicId = epic.getId();
         final Epic savedEpic = manager.getEpicById(epicId);
@@ -191,7 +189,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("удаляем Epic задачу")
-    public void removeEpicByIdTest() throws IOException {
+    public void removeEpicByIdTest()  {
         manager.addEpic(epic);
         final int epicId = epic.getId();
         List<Epic> epics = manager.getEpicAll();
@@ -207,7 +205,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("добавляем SubTask задачу")
-    public void addSubTaskTest() throws IOException {
+    public void addSubTaskTest(){
         manager.addEpic(epic);
         //проверяем список подзадач у epic. Должен быть 0
         final List<SubTask> subTaskNull = manager.getSubTaskAll();
@@ -348,7 +346,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("обновляем статус")
-    public void updateStatusTest() throws IOException {
+    public void updateStatusTest()  {
         manager.addEpic(epic);
 
         //проверяем статус epic - должен быть NEW
@@ -412,4 +410,52 @@ public abstract class TaskManagerTest<T extends TaskManager> {
             manager.addTask(task3);
         });
     }
+
+    @Test
+    @DisplayName("удаляем все SubTask")
+    public void removeSubTaskAll() {
+        manager.addEpic(epic);
+        subTask1.setEpicId(epic.getId());
+        subTask2.setEpicId(epic.getId());
+        manager.addSubTask(subTask1);
+        manager.addSubTask(subTask2);
+        List<SubTask> subTaskList = manager.getSubTaskAll();
+
+        assertNotNull(subTaskList, "Задачи не возвращаются.");
+        assertEquals(2, subTaskList.size(), "Неверное количество задач.");
+
+        manager.removeSubTaskAll();
+        subTaskList = manager.getSubTaskAll();
+        assertEquals(0, subTaskList.size(), "Неверное количество задач.");
+    }
+
+    @Test
+    @DisplayName("удаляем все Epic")
+    public void removeEpicAllTest()  {
+        manager.addEpic(epic);
+        List<Epic> epics = manager.getEpicAll();
+
+        assertNotNull(epics, "Задачи не возвращаются.");
+        assertEquals(1, epics.size(), "Неверное количество задач.");
+
+        manager.removeEpicAll();
+        epics = manager.getEpicAll();
+        assertEquals(0, epics.size(), "Неверное количество задач.");
+    }
+
+    @Test
+    @DisplayName("удаляем все Task ")
+    public void removeTaskAllTest() {
+        manager.addTask(task);
+        final int taskId = task.getId();
+        List<Task> tasks = manager.getTaskAll();
+
+        assertEquals(1, tasks.size(), "Неверное количество задач.");
+
+        manager.removeTaskAll();
+        tasks = manager.getTaskAll();
+
+        assertEquals(0, tasks.size(), "Неверное количество задач.");
+    }
+
 }

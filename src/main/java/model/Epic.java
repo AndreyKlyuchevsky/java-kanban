@@ -84,7 +84,6 @@ public class Epic extends Task {
 
     public void removeSubtaskAll() {
         subTaskList.clear();
-        recalculate();
     }
 
     public List<Integer> getSubtaskIds() {

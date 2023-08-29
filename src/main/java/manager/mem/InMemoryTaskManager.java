@@ -75,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    
+
 //    private boolean isDateTimeBetween(LocalDateTime date, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 //        return (date.isEqual(startDateTime) || date.isAfter(startDateTime)) &&
 //                (date.isEqual(endDateTime) || date.isBefore(endDateTime));
@@ -257,7 +257,9 @@ public class InMemoryTaskManager implements TaskManager {
         subTaskMap.clear();
         for (Epic value : epicMap.values()) {
             value.removeSubtaskAll();
-            updateStatus(value.getId());
+            value.setStatus(StatusTask.NEW);
+            value.setDuration(0);
+            value.setStartTime(null);
         }
     }
 
