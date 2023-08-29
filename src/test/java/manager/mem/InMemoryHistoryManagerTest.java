@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryHistoryManagerTest {
 
-    private Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1,8,LocalDateTime.of(2023, 9, 8, 00, 00, 00) );
-    private Task task = new Task("Test addNewTask", "Test addNewTask description", 2, StatusTask.NEW,8,LocalDateTime.of(2023, 1, 8, 00, 00, 00));
+    private Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1, 8, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
+    private Task task = new Task("Test addNewTask", "Test addNewTask description", 2, StatusTask.NEW, 8, LocalDateTime.of(2023, 1, 8, 00, 00, 00));
     private HistoryManager historyManager = new InMemoryHistoryManager();
 
     @Test
@@ -54,7 +54,7 @@ class InMemoryHistoryManagerTest {
         for (int i = 0; i < 2; i++) {
             historyManager.add(task);
         }
-        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 4,12,LocalDateTime.of(2023, 25, 8, 00, 00, 00));
+        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 4, 12, LocalDateTime.of(2023, 25, 8, 00, 00, 00));
         historyManager.add(subTask);
 
         final List<Task> history = historyManager.getHistory();

@@ -26,15 +26,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InMemoryHistoryManager that = (InMemoryHistoryManager) o;
-        return Objects.equals(head, that.head) && Objects.equals(tail, that.tail) && Objects.equals(taskNode, that.taskNode);
-    }
-
     @Override
     public void add(Task task) {
         if (task != null) {
@@ -46,12 +37,12 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else if (taskNode.containsKey(task.getId())) {
                 removeNode(taskNode.get(task.getId()));
                 taskNode.remove(task.getId());
-                if (taskNode.size() == 0){
+                if (taskNode.size() == 0) {
                     final Node<Task> newNode = new Node<>(null, task, null);
                     head = newNode;
                     tail = newNode;
                     taskNode.put(task.getId(), newNode);
-                }else{
+                } else {
                     linkLast(task);
                 }
             } else {

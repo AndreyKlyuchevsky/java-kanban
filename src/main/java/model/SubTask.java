@@ -8,19 +8,17 @@ public class SubTask extends Task {
     private int epicId;
 
 
-    public SubTask(String name, String description, StatusTask status,int subTaskId, int epicId, int duration, LocalDateTime startTime) {
-        super(name, description, subTaskId, status,duration,startTime);
+    public SubTask(String name, String description, StatusTask status, int subTaskId, int epicId, int duration, LocalDateTime startTime) {
+        super(name, description, subTaskId, status, duration, startTime);
         this.epicId = epicId;
         type = TaskType.SUBTASK;
     }
 
-    public SubTask(String name, String description, StatusTask status, int epicId,int duration, LocalDateTime startTime) {
-        super(name, description,status,duration,startTime);
+    public SubTask(String name, String description, StatusTask status, int epicId, int duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
         this.epicId = epicId;
         type = TaskType.SUBTASK;
     }
-
-
 
 
     @Override
@@ -40,8 +38,6 @@ public class SubTask extends Task {
     public TaskType getType() {
         return type;
     }
-
-
 
 
     public int getEpicId() {

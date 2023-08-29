@@ -58,22 +58,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = values[2];
         StatusTask status = StatusTask.valueOf(values[3]);
         String description = values[4];
-        int duration= Integer.parseInt(values[6]);
-        LocalDateTime startTime= LocalDateTime.parse(values[7]);
+        int duration = Integer.parseInt(values[6]);
+        LocalDateTime startTime = LocalDateTime.parse(values[7]);
         Task task;
 
         switch (type) {
             case TASK:
-                task = new Task(name, description, id, status,duration,startTime);
+                task = new Task(name, description, id, status, duration, startTime);
                 manager.taskMap.put(task.getId(), task);
                 break;
             case EPIC:
-                task = new Epic(name, description, id,duration,startTime);
+                task = new Epic(name, description, id, duration, startTime);
                 manager.epicMap.put(task.getId(), (Epic) task);
                 break;
             case SUBTASK:
                 int epicId = Integer.parseInt(values[5]);
-                task = new SubTask(name, description, status, id,epicId,duration,startTime);
+                task = new SubTask(name, description, status, id, epicId, duration, startTime);
                 manager.subTaskMap.put(task.getId(), (SubTask) task);
                 break;
         }
@@ -82,9 +82,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
     public static void historyFromString(String value, FileBackedTasksManager manager) {
-       if(value==null){
-           return;
-       }
+        if (value == null) {
+            return;
+        }
         String[] ids = value.split(",");
         for (String id : ids) {
             manager.getTaskById(Integer.parseInt(id));
@@ -119,12 +119,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (task.getType() == TaskType.SUBTASK) {
             SubTask subTask = (SubTask) task;
             line = line + subTask.getEpicId() + ","
-                    +task.getDuration() + ","
-                    +task.getStartTime() + ",";
+                    + task.getDuration() + ","
+                    + task.getStartTime() + ",";
         } else {
             line = line + ","
-                    +task.getDuration() + ","
-                    +task.getStartTime() + ",";
+                    + task.getDuration() + ","
+                    + task.getStartTime() + ",";
         }
         return line;
     }

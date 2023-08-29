@@ -11,8 +11,8 @@ public class Epic extends Task {
     private List<SubTask> subTaskList = new ArrayList<>();
     private LocalDateTime endTime; // Рассчитываемое поле
 
-    public Epic(String name, String description, int id,int duration, LocalDateTime startTime) {
-        super(name, description, id, StatusTask.NEW,duration,startTime);
+    public Epic(String name, String description, int id, int duration, LocalDateTime startTime) {
+        super(name, description, id, StatusTask.NEW, duration, startTime);
         type = TaskType.EPIC;
     }
 
@@ -20,8 +20,9 @@ public class Epic extends Task {
         super(name, description, StatusTask.NEW);
         type = TaskType.EPIC;
     }
-    public Epic(String name, String description,int id) {
-        super(name, description, id,StatusTask.NEW);
+
+    public Epic(String name, String description, int id) {
+        super(name, description, id, StatusTask.NEW);
         type = TaskType.EPIC;
     }
 
@@ -73,8 +74,8 @@ public class Epic extends Task {
 
     public void removeSubtaskId(int id) {
         for (int i = 0; i < subTaskList.size(); i++) {
-           if(subTaskList.get(i).getId()!=id){
-               break;
+            if (subTaskList.get(i).getId() != id) {
+                break;
             }
             subTaskList.remove(i);
             recalculate();
