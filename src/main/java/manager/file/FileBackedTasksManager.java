@@ -66,6 +66,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case TASK:
                 task = new Task(name, description, id, status, duration, startTime);
                 manager.taskMap.put(task.getId(), task);
+                manager.resetTaskTreeSet(task);
                 break;
             case EPIC:
                 task = new Epic(name, description, id, duration, startTime);
@@ -75,6 +76,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 int epicId = Integer.parseInt(values[5]);
                 task = new SubTask(name, description, status, id, epicId, duration, startTime);
                 manager.subTaskMap.put(task.getId(), (SubTask) task);
+                manager.resetTaskTreeSet(task);
                 break;
         }
 

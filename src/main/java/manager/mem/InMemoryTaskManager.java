@@ -76,7 +76,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(taskTreeSet);
     }
 
-    private void resetTaskTreeSet(Task task) {
+    public void resetTaskTreeSet(Task task) {
         if (!taskTreeSet.contains(task)) {
             taskTreeSet.remove(task);
         }
@@ -161,11 +161,8 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = taskMap.get(id);
         if (task != null) {
-            history.add(task);
-            return task;
-        } else {
-            return null;
-        }
+            history.add(task);}
+        return task;
     }
 
     @Override
@@ -173,10 +170,9 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epicMap.get(id);
         if (epic != null) {
             history.add(epic);
-            return epic;
-        } else {
-            return null;
         }
+        return epic;
+
     }
 
     @Override
@@ -184,10 +180,8 @@ public class InMemoryTaskManager implements TaskManager {
         SubTask subTask = subTaskMap.get(id);
         if (subTask != null) {
             history.add(subTask);
-            return subTask;
-        } else {
-            return null;
         }
+        return subTask;
     }
 
     @Override
