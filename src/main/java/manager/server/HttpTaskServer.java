@@ -1,59 +1,49 @@
 package manager.server;
-import com.google.gson.GsonBuilder;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import manager.file.FileBackedTasksManager;
+import com.google.gson.Gson;
+import manager.server.handler.EpicHandler;
+import manager.server.handler.HistoryHandler;
+import manager.server.handler.SubTaskHandler;
+import manager.server.handler.TaskHandler;
+
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private final HttpServer server;
 
-    public HttpTaskServer() throws IOException {
-        HttpServer httpServer = HttpServer.create();
-        httpServer.bind(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/hello", new HelloHandler());
+    public HttpTaskServer(FileBackedTasksManager manager, Gson gson) throws IOException {
+        // Создаем HTTP-сервер и привязываем его к порту 8080
+        server = HttpServer.create(new InetSocketAddress(PORT), 0);
+
+        // Добавляем обработчики для различных типов задач
+        HttpHandler taskHandler = new TaskHandler(manager, gson);
+        HttpHandler subTaskHandler = new SubTaskHandler(manager, gson);
+        HttpHandler epicHandler = new EpicHandler(manager, gson);
+        HttpHandler historyHandler = new HistoryHandler(manager, gson);
 
 
-
-
-        httpServer.start();
+        // Маппим пути к обработчикам
+        server.createContext("/tasks/task", taskHandler);
+        server.createContext("/tasks/subtask", subTaskHandler);
+        server.createContext("/tasks/epic", epicHandler);
+        server.createContext("/tasks/history", historyHandler);
     }
 
+    public void start() {
+        // Запускаем сервер
+        server.start();
+        System.out.println("Server started on port " + PORT);
+    }
 
-
-    static class HelloHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-
-            String method = httpExchange.getRequestMethod();
-            System.out.println("Началась обработка " + method + " /hello запроса от клиента.");
-
-            String response;
-
-            switch(method) {
-                case "POST":
-                    response = "Вы использовали метод POST!";
-                    break;
-                case "GET":
-                    response = "Вы использовали метод GET!";
-                    break;
-                default:
-                    response = "Вы использовали какой-то другой метод!";
-            }
-
-            httpExchange.getResponseHeaders().set("content-type", "text/plain; charset=utf-8");
-            httpExchange.sendResponseHeaders(200, 0);
-
-            try (OutputStream os = httpExchange.getResponseBody()) {
-                os.write(response.getBytes(DEFAULT_CHARSET));
-
-            }
-        }
+    public void stop() {
+        // Останавливаем сервер
+        server.stop(0);
+        System.out.println("Server stopped");
     }
 }

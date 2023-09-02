@@ -1,12 +1,14 @@
-import static java.nio.charset.StandardCharsets.UTF_8;
+package manager.server;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
@@ -25,18 +27,51 @@ public class KVServer {
 		server.createContext("/load", this::load);
 	}
 
-	private void load(HttpExchange h) {
+	private void load(HttpExchange h) throws IOException {
 		// TODO Добавьте получение значения по ключу
+
+		try {
+			System.out.println("\n/load");
+//			if (!hasAuth(h)) {
+//				System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+//				h.sendResponseHeaders(403, 0);
+//				return;
+//			}
+			if ("GET".equals(h.getRequestMethod())) {
+				String key = h.getRequestURI().getPath().substring("/load/".length());
+				if (key.isEmpty()) {
+					System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
+					h.sendResponseHeaders(400, 0);
+					return;
+				}
+				String value=data.get(key);
+				if (value==null || value.isEmpty()) {
+					System.out.println("Значение для ключа " + key + " отсутствует." );
+					h.sendResponseHeaders(404, 0);
+					return;
+				}
+				System.out.println("Значение для ключа " + key + " успешно извлечено! Значение = " + value);
+				sendText(h,value);
+			} else {
+				System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
+				h.sendResponseHeaders(405, 0);
+			}
+		} finally {
+			h.close();
+		}
+
+
+
 	}
 
 	private void save(HttpExchange h) throws IOException {
 		try {
 			System.out.println("\n/save");
-			if (!hasAuth(h)) {
-				System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
-				h.sendResponseHeaders(403, 0);
-				return;
-			}
+//			if (!hasAuth(h)) {
+//				System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+//				h.sendResponseHeaders(403, 0);
+//				return;
+//			}
 			if ("POST".equals(h.getRequestMethod())) {
 				String key = h.getRequestURI().getPath().substring("/save/".length());
 				if (key.isEmpty()) {
@@ -81,6 +116,12 @@ public class KVServer {
 		System.out.println("Открой в браузере http://localhost:" + PORT + "/");
 		System.out.println("API_TOKEN: " + apiToken);
 		server.start();
+	}
+
+	public void stop() {
+		// Останавливаем сервер
+		server.stop(0);
+		System.out.println("Server stopped");
 	}
 
 	private String generateApiToken() {

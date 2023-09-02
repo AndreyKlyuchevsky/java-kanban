@@ -18,7 +18,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     @Override
     @BeforeEach // ревьюрер предлагал создать метод BeforeEach
     protected void init() {
-        manager = new FileBackedTasksManager(new File("filewriter.csv"));
+        manager = new FileBackedTasksManager("filewriter.csv");
         super.init();
     }
 
@@ -40,7 +40,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         // Сохраняем историю просмотра
         List<Task> historyTask = manager.getHistory();
         // Загружаем менеджера из файла
-        FileBackedTasksManager loadedManager = FileBackedTasksManager.loadFromFile(new File("filewriter.csv"));
+        FileBackedTasksManager loadedManager = FileBackedTasksManager.loadFromFile("filewriter.csv");
         // Проверяем, что загруженные задачи совпадают с добавленными
         assertEquals(epic, loadedManager.getEpicById(epic.getId()));
         assertEquals(task, loadedManager.getTaskById(task.getId()));

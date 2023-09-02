@@ -1,4 +1,4 @@
-package manager.server;
+package manager.server.handler;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
@@ -16,7 +16,7 @@ public class EpicHandler implements HttpHandler {
 
     public EpicHandler(FileBackedTasksManager manager, Gson gson) {
         this.taskManager = manager;
-        this.gson = new Gson();
+        this.gson = gson;
     }
 
     @Override

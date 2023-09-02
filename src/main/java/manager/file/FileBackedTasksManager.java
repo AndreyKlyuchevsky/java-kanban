@@ -7,15 +7,15 @@ import java.io.*;
 import java.time.LocalDateTime;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final File path;
+    private final String path;
     private static final String HEADER = "id,type,name,status,description,epic,duration,startTime";
 
 
-    public FileBackedTasksManager(File path) {
+    public FileBackedTasksManager(String path) {
         this.path = path;
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(String file) {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         loadTasksFromFile(manager);
         return manager;
