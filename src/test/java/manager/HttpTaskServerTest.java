@@ -1,14 +1,20 @@
 package manager;
 
-import com.google.gson.Gson;
-import manager.file.FileBackedTasksManager;
 import manager.server.HttpTaskServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import manager.file.FileBackedTasksManager;
+import com.google.gson.Gson;
+
+
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpTaskServerTest {
@@ -17,13 +23,12 @@ public class HttpTaskServerTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        // Инициализация HttpTaskServer перед каждым тестом
+        // Запуск HttpTaskServer перед каждым тестом
         FileBackedTasksManager manager = new FileBackedTasksManager("test_data.json");
         Gson gson = new Gson();
         httpTaskServer = new HttpTaskServer(manager, gson);
         httpTaskServer.start();
     }
-
 
     @AfterEach
     void tearDown() {
@@ -32,68 +37,75 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    void testTaskEndpoint() throws IOException {
+    void testTaskEndpoint() throws IOException, InterruptedException {
         // Тест эндпоинта "/tasks/task"
+
         // Подготовка данных для запроса
-        URL url = new URL("http://localhost:8080/tasks/task?id=1");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/task?id=1"))
+                .GET()
+                .build();
 
-        // Выполнение запроса и проверка статуса ответа
-        int responseCode = connection.getResponseCode();
-        assertEquals(200, responseCode);
+        // Выполнение запроса
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Закрытие соединения
-        connection.disconnect();
+        // Проверка статуса ответа
+        assertEquals(200, response.statusCode());
     }
 
     @Test
-    void testSubTaskEndpoint() throws IOException {
+    void testSubTaskEndpoint() throws IOException, InterruptedException {
         // Тест эндпоинта "/tasks/subtask"
 
         // Подготовка данных для запроса
-        URL url = new URL("http://localhost:8080/tasks/subtask?id=1");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/subtask?id=1"))
+                .GET()
+                .build();
 
-        // Выполнение запроса и проверка статуса ответа
-        int responseCode = connection.getResponseCode();
-        assertEquals(200, responseCode);
+        // Выполнение запроса
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Закрытие соединения
-        connection.disconnect();
+        // Проверка статуса ответа
+        assertEquals(200, response.statusCode());
     }
 
     @Test
-    void testEpicEndpoint() throws IOException {
+    void testEpicEndpoint() throws IOException, InterruptedException {
         // Тест эндпоинта "/tasks/epic"
+
         // Подготовка данных для запроса
-        URL url = new URL("http://localhost:8080/tasks/epic?id=1");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/epic?id=1"))
+                .GET()
+                .build();
 
-        // Выполнение запроса и проверка статуса ответа
-        int responseCode = connection.getResponseCode();
-        assertEquals(200, responseCode);
+        // Выполнение запроса
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Закрытие соединения
-        connection.disconnect();
+        // Проверка статуса ответа
+        assertEquals(200, response.statusCode());
     }
 
     @Test
-    void testHistoryEndpoint() throws IOException {
+    void testHistoryEndpoint() throws IOException, InterruptedException {
         // Тест эндпоинта "/tasks/history"
+
         // Подготовка данных для запроса
-        URL url = new URL("http://localhost:8080/tasks/history?id=1");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/history?id=1"))
+                .GET()
+                .build();
 
-        // Выполнение запроса и проверка статуса ответа
-        int responseCode = connection.getResponseCode();
-        assertEquals(200, responseCode);
+        // Выполнение запроса
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Закрытие соединения
-        connection.disconnect();
+        // Проверка статуса ответа
+        assertEquals(200, response.statusCode());
     }
 
 }
