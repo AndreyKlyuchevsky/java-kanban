@@ -22,22 +22,22 @@ public class HistoryHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-        if ("GET".equals(exchange.getRequestMethod())) {
-            // Получить историю задач из менеджера
-            List<Task> history = taskManager.getHistory();
+            if ("GET".equals(exchange.getRequestMethod())) {
+                // Получить историю задач из менеджера
+                List<Task> history = taskManager.getHistory();
 
-            // Преобразовать историю в формат JSON
-            String jsonResponse = gson.toJson(history);
+                // Преобразовать историю в формат JSON
+                String jsonResponse = gson.toJson(history);
 
-            // Отправить JSON-ответ клиенту
-            exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(jsonResponse.getBytes());
+                // Отправить JSON-ответ клиенту
+                exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(jsonResponse.getBytes());
+                }
+            } else {
+                // Если метод запроса не GET, вернуть ошибку метода не разрешен
+                exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
             }
-        } else {
-            // Если метод запроса не GET, вернуть ошибку метода не разрешен
-            exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
-        }
         } finally {
             exchange.close();
         }

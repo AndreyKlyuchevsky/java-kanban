@@ -2,8 +2,7 @@ package manager.http;
 
 import com.google.gson.Gson;
 import manager.file.FileBackedTasksManager;
-import manager.server.KVTaskClient;
-
+import manager.client.KVTaskClient;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     private KVTaskClient client;
@@ -12,10 +11,8 @@ public class HttpTaskManager extends FileBackedTasksManager {
         super(serverUrl);
         // Инициализация клиента KVTaskClient с указанным URL сервера
         this.client = new KVTaskClient(serverUrl);
-
-
-
     }
+
     public static HttpTaskManager createWithInitialState(String serverUrl) {
         KVTaskClient client = new KVTaskClient(serverUrl);
 
@@ -42,5 +39,13 @@ public class HttpTaskManager extends FileBackedTasksManager {
         client.put("task_manager_state", managerStateJson);
     }
 
+    public void put(String key, String json) {
+        // Отправляем данные на сервер KVServer
+        client.put(key, json);
+    }
 
+    public String load(String key) {
+        // Загружаем данные с сервера KVServer
+        return client.load(key);
+    }
 }

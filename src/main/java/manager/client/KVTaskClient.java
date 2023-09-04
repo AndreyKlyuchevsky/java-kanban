@@ -1,4 +1,4 @@
-package manager.server;
+package manager.client;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -31,10 +31,10 @@ public class KVTaskClient {
                 responseStream.close();
                 return token;
             } else {
-                throw new IOException("Failed to register with server. Response code: " + responseCode);
+                throw new CustomSaveDataException("Failed to register with server. Response code: " + responseCode);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to register with server", e);
+            throw new KVTaskClientException("Failed to register with server", e);
         }
     }
 
@@ -54,10 +54,10 @@ public class KVTaskClient {
 
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Failed to save data. Response code: " + responseCode);
+                throw new CustomSaveDataException("Failed to save data. Response code: " + responseCode);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save data", e);
+            throw new KVTaskClientException("Failed to save data", e);
         }
     }
 
@@ -71,20 +71,21 @@ public class KVTaskClient {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Получаем данные из ответа сервера
-                InputStream responseStream = connection.getInputStream();
-                Scanner scanner = new Scanner(responseStream, "UTF-8");
-                String data = scanner.useDelimiter("\\A").next();
-                scanner.close();
-                responseStream.close();
-                return data;
+                try (InputStream responseStream = connection.getInputStream()) {
+                    Scanner scanner = new Scanner(responseStream, "UTF-8");
+                    String data = scanner.useDelimiter("\\A").next();
+                    scanner.close();
+                    return data;
+                }
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                 // Если данные не найдены, вернем null
                 return null;
             } else {
-                throw new IOException("Failed to load data. Response code: " + responseCode);
+                throw new CustomSaveDataException("Failed to load data. Response code: " + responseCode);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load data", e);
+            throw new KVTaskClientException("Failed to load data", e);
         }
     }
+
 }
