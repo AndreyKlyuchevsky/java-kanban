@@ -21,6 +21,7 @@ public class HistoryHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        try {
         if ("GET".equals(exchange.getRequestMethod())) {
             // Получить историю задач из менеджера
             List<Task> history = taskManager.getHistory();
@@ -36,6 +37,9 @@ public class HistoryHandler implements HttpHandler {
         } else {
             // Если метод запроса не GET, вернуть ошибку метода не разрешен
             exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+        }
+        } finally {
+            exchange.close();
         }
     }
 }
