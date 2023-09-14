@@ -9,11 +9,14 @@ import model.Epic;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class EpicHandler implements HttpHandler {
     private final FileBackedTasksManager taskManager;
     private final Gson gson;
+    private static final int INVALID_ID = -1;
 
     public EpicHandler(FileBackedTasksManager manager, Gson gson) {
         this.taskManager = manager;
@@ -27,46 +30,47 @@ public class EpicHandler implements HttpHandler {
                 // Обработка POST-запроса для создания или обновления Epic
                 Epic newEpic = parseEpicFromBody(exchange);
 
-                if (newEpic.getId() != 0) {
-                    // Если есть id, это запрос на обновление
-                    taskManager.updateEpic(newEpic);
-                    sendEmptyResponse(exchange, 200); // Отправляем код 200 OK
-                } else {
-                    // Иначе, это запрос на создание нового Epic
-                    taskManager.addEpic(newEpic);
-                    sendJsonResponse(exchange, gson.toJson(newEpic), 201); // Отправляем код 201 Created
-                }
-            }else if ("POST".equals(exchange.getRequestMethod())) {
-                // Обработка POST-запроса для создания Epic
-                // Распарсите JSON-тело и передайте его в метод создания Epic
-                // Отправьте JSON-ответ с созданным Epic и статусом 201 Created
-                Epic newEpic = parseEpicFromBody(exchange);
-                taskManager.addEpic(newEpic);
-                sendJsonResponse(exchange, gson.toJson(newEpic), 201);
+                if (newEpic != null) {
+                    int epicId = extractEpicIdFromRequest(exchange);
 
+                    if (epicId != INVALID_ID) {
+                        // Если есть корректный id, это запрос на обновление
+                        taskManager.updateEpic(newEpic);
+                        sendEmptyResponse(exchange, 200); // Отправляем код 200 OK
+                    } else {
+                        // Иначе, это запрос на создание нового Epic
+                        taskManager.addEpic(newEpic);
+                        sendJsonResponse(exchange, gson.toJson(newEpic), 201); // Отправляем код 201 Created
+                    }
+                }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления Epic
-                // И отправка статуса 204 No Content
                 int epicId = extractEpicIdFromRequest(exchange);
-                taskManager.removeEpicById(epicId);
-                sendEmptyResponse(exchange, 204);
+                if (epicId != INVALID_ID) {
+                    taskManager.removeEpicById(epicId);
+                    sendEmptyResponse(exchange, 204); // Отправляем код 204 No Content
+                } else {
+                    // ID не найден или неверного формата, отправляем ошибку
+                    sendErrorResponse(exchange, 400, "Invalid Epic ID");
+                }
             }
+        } catch (NumberFormatException e) {
+            // Неправильный формат ID, отправляем ошибку
+            sendErrorResponse(exchange, 400, "Invalid Epic ID");
         } finally {
             exchange.close();
         }
     }
 
-    private int extractEpicIdFromRequest(HttpExchange exchange) throws IOException {
+
+    private int extractEpicIdFromRequest(HttpExchange exchange) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParams = query.split("=");
         if (queryParams.length == 2 && "id".equals(queryParams[0])) {
-            try {
-                return Integer.parseInt(queryParams[1]);
-            } catch (NumberFormatException e) {
-                throw new IOException("Invalid Epic ID", e);
-            }
+            return Integer.parseInt(queryParams[1]);
         }
-        throw new IOException("Epic ID not found");
+        // ID не найден или неверного формата
+        return -1;
     }
 
     private Epic parseEpicFromBody(HttpExchange exchange) throws IOException {
@@ -75,8 +79,9 @@ public class EpicHandler implements HttpHandler {
         try {
             return gson.fromJson(requestBody, Epic.class);
         } catch (JsonSyntaxException e) {
+            // Если формат JSON неверный, отправляем ошибку и возвращаем null
             sendErrorResponse(exchange, 400, "Invalid JSON format");
-            throw new IOException("Invalid JSON format", e); // Выбрасываем исключение
+            return null;
         }
     }
 
@@ -88,13 +93,11 @@ public class EpicHandler implements HttpHandler {
         exchange.sendResponseHeaders(statusCode, response.length());
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
-            os.close();;
         }
     }
 
     private void sendEmptyResponse(HttpExchange exchange, int statusCode) throws IOException {
         exchange.sendResponseHeaders(statusCode, -1);
-        exchange.close();
     }
 
     private void sendErrorResponse(HttpExchange exchange, int statusCode, String errorMessage) throws IOException {

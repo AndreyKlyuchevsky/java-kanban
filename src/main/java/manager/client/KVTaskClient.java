@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class KVTaskClient {
+public class KVTaskClient implements TaskClient {
     private final String serverUrl;
     private final String apiToken;
 
@@ -14,7 +14,8 @@ public class KVTaskClient {
         this.apiToken = register();
     }
 
-    private String register() {
+    @Override
+    public String register() {
         try {
             URL url = new URL(serverUrl + "/register");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -23,21 +24,21 @@ public class KVTaskClient {
 
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Получаем токен из ответа сервера
-                InputStream responseStream = connection.getInputStream();
-                Scanner scanner = new Scanner(responseStream, "UTF-8");
-                String token = scanner.useDelimiter("\\A").next();
-                scanner.close();
-                responseStream.close();
-                return token;
+                // Wrap the InputStream in a try-with-resources block to ensure it's properly closed
+                try (InputStream responseStream = connection.getInputStream()) {
+                    try (Scanner scanner = new Scanner(responseStream, "UTF-8")) {
+                        return scanner.useDelimiter("\\A").next();
+                    }
+                }
             } else {
-                throw new CustomSaveDataException("Failed to register with server. Response code: " + responseCode);
+                throw new KVTaskClientException("Failed to register with server. Response code: " + responseCode);
             }
         } catch (IOException e) {
             throw new KVTaskClientException("Failed to register with server", e);
         }
     }
 
+    @Override
     public void put(String key, String json) {
         try {
             URL url = new URL(serverUrl + "/save/" + key + "?API_TOKEN=" + apiToken);
@@ -54,13 +55,14 @@ public class KVTaskClient {
 
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new CustomSaveDataException("Failed to save data. Response code: " + responseCode);
+                throw new KVTaskClientException("Failed to save data. Response code: " + responseCode);
             }
         } catch (IOException e) {
             throw new KVTaskClientException("Failed to save data", e);
         }
     }
 
+    @Override
     public String load(String key) {
         try {
             URL url = new URL(serverUrl + "/load/" + key + "?API_TOKEN=" + apiToken);
@@ -81,7 +83,7 @@ public class KVTaskClient {
                 // Если данные не найдены, вернем null
                 return null;
             } else {
-                throw new CustomSaveDataException("Failed to load data. Response code: " + responseCode);
+                throw new KVTaskClientException("Failed to load data. Response code: " + responseCode);
             }
         } catch (IOException e) {
             throw new KVTaskClientException("Failed to load data", e);

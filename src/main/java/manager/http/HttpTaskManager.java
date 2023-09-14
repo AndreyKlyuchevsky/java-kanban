@@ -1,51 +1,46 @@
-package manager.http;
+    package manager.http;
 
-import com.google.gson.Gson;
-import manager.file.FileBackedTasksManager;
-import manager.client.KVTaskClient;
+    import com.google.gson.Gson;
+    import manager.file.FileBackedTasksManager;
+    import manager.client.KVTaskClient;
 
-public class HttpTaskManager extends FileBackedTasksManager {
-    private KVTaskClient client;
+    public class HttpTaskManager extends FileBackedTasksManager {
+        private KVTaskClient client;
 
-    public HttpTaskManager(String serverUrl) {
-        super(serverUrl);
-        // Инициализация клиента KVTaskClient с указанным URL сервера
-        this.client = new KVTaskClient(serverUrl);
+        public HttpTaskManager(String serverUrl) {
+            super(serverUrl);
+            // Инициализация клиента KVTaskClient с указанным URL сервера
+            this.client = new KVTaskClient(serverUrl);
+        }
+
+        public static HttpTaskManager createWithInitialState(String serverUrl) {
+            KVTaskClient client = new KVTaskClient(serverUrl);
+
+            // Загрузка исходного состояния менеджера с сервера
+            String initialState = client.load("task_manager_state");
+
+            // Парсинг JSON и создание экземпляра менеджера
+            Gson gson = new Gson();
+            HttpTaskManager manager = gson.fromJson(initialState, HttpTaskManager.class);
+
+            // Устанавливаем клиент
+            manager.client = client;
+
+            return manager;
+        }
+
+        @Override
+        public void save() {
+            // Конвертируем текущее состояние менеджера в JSON
+            Gson gson = new Gson();
+            String managerStateJson = gson.toJson(this);
+
+            // Отправляем состояние менеджера на сервер KVServer
+            client.put("task_manager_state", managerStateJson);
+        }
+
+
+        public KVTaskClient getClient() {
+            return client;
+        }
     }
-
-    public static HttpTaskManager createWithInitialState(String serverUrl) {
-        KVTaskClient client = new KVTaskClient(serverUrl);
-
-        // Загрузка исходного состояния менеджера с сервера
-        String initialState = client.load("task_manager_state");
-
-        // Парсинг JSON и создание экземпляра менеджера
-        Gson gson = new Gson();
-        HttpTaskManager manager = gson.fromJson(initialState, HttpTaskManager.class);
-
-        // Устанавливаем клиент
-        manager.client = client;
-
-        return manager;
-    }
-
-    @Override
-    public void save() {
-        // Конвертируем текущее состояние менеджера в JSON
-        Gson gson = new Gson();
-        String managerStateJson = gson.toJson(this);
-
-        // Отправляем состояние менеджера на сервер KVServer
-        client.put("task_manager_state", managerStateJson);
-    }
-
-    public void put(String key, String json) {
-        // Отправляем данные на сервер KVServer
-        client.put(key, json);
-    }
-
-    public String load(String key) {
-        // Загружаем данные с сервера KVServer
-        return client.load(key);
-    }
-}

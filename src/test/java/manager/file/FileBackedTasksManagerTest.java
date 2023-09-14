@@ -2,24 +2,18 @@ package manager.file;
 
 import manager.TaskManagerTest;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     @Override
-    @BeforeEach // ревьюрер предлагал создать метод BeforeEach
-    protected void init() {
-        manager = new FileBackedTasksManager("filewriter.csv");
-        super.init();
+    public FileBackedTasksManager getManager() {
+        return new FileBackedTasksManager("filewriter.csv");
     }
 
     @Test

@@ -12,6 +12,7 @@ import java.util.List;
 public class SubTaskHandler implements HttpHandler {
     private final FileBackedTasksManager manager;
     private final Gson gson;
+    private static final int INVALID_ID = -1;
 
     public SubTaskHandler(FileBackedTasksManager manager, Gson gson) {
         this.manager = manager;
@@ -25,7 +26,7 @@ public class SubTaskHandler implements HttpHandler {
         int id = extractIdFromPath(path);
         try {
             if (method.equals("GET")) {
-                if (id == -1) {
+                if (id ==INVALID_ID) {
                     // Запрос на получение всех SubTask
                     List<SubTask> subTasks = manager.getSubTaskAll();
                     sendResponse(exchange, gson.toJson(subTasks), 200);
@@ -40,7 +41,7 @@ public class SubTaskHandler implements HttpHandler {
                 }
             } else if (method.equals("POST")) {
                 // Запрос на создание нового SubTask
-                if (id == -1) {
+                if (id == INVALID_ID) {
                     InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
                     BufferedReader br = new BufferedReader(isr);
                     String json = br.readLine();
@@ -53,7 +54,7 @@ public class SubTaskHandler implements HttpHandler {
                 }
             } else if (method.equals("DELETE")) {
                 // Запрос на удаление SubTask по ID
-                if (id != -1) {
+                if (id != INVALID_ID) {
                     manager.removeSubTaskById(id);
                     sendResponse(exchange, "SubTask deleted", 200);
                 } else {

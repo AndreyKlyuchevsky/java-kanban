@@ -58,10 +58,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = values[2];
         StatusTask status = StatusTask.valueOf(values[3]);
         String description = values[4];
-        int duration = Integer.parseInt(values[6]);
-        LocalDateTime startTime = LocalDateTime.parse(values[7]);
+        int duration = 0;
+        LocalDateTime startTime = null;
+        if(type!=TaskType.EPIC){
+            duration = Integer.parseInt(values[6]);
+            startTime = LocalDateTime.parse(values[7]);
+        }
         Task task;
-
         switch (type) {
             case TASK:
                 task = new Task(name, description, id, status, duration, startTime);
@@ -69,7 +72,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 manager.resetTaskTreeSet(task);
                 break;
             case EPIC:
-                task = new Epic(name, description, id, duration, startTime);
+                task = new Epic(name, description, id);
                 manager.epicMap.put(task.getId(), (Epic) task);
                 break;
             case SUBTASK:
@@ -96,39 +99,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //методы для сохранения
     public void save() {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path))) {
-            bufferedWriter.write(HEADER);
-            bufferedWriter.newLine();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            writer.write(HEADER);
+            writer.newLine();
 
+            // Save tasks to the file
             for (Task task : super.getAll()) {
-                bufferedWriter.write(taskToString(task));
-                bufferedWriter.newLine();
+                writer.write(taskToString(task));
+                writer.newLine();
             }
 
-            bufferedWriter.newLine(); // Пустая строка
-            bufferedWriter.write(historyToString());
+            writer.newLine();
+            writer.write(historyToString());
         } catch (IOException exception) {
             throw new ManagerSaveException("Failed to save tasks to file: " + path, exception);
         }
     }
 
+
     private String taskToString(Task task) {
-        String line = task.getId() + ","
+        return task.getId() + ","
                 + task.getType() + ","
                 + task.getName() + ","
                 + task.getStatus() + ","
-                + task.getDescription() + ",";
-        if (task.getType() == TaskType.SUBTASK) {
-            SubTask subTask = (SubTask) task;
-            line = line + subTask.getEpicId() + ","
+                + task.getDescription() + ","
+                + task.getEpicId() + ","
+                    + task.getDuration() + ","
+                    + task.getStartTime() + ","
                     + task.getDuration() + ","
                     + task.getStartTime() + ",";
-        } else {
-            line = line + ","
-                    + task.getDuration() + ","
-                    + task.getStartTime() + ",";
-        }
-        return line;
     }
 
     @Override

@@ -64,7 +64,7 @@ public class Task {
         this.description = description;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -103,6 +103,9 @@ public class Task {
         return null;
     }
 
+    public int getEpicId() {
+        return -1; // Return an appropriate value or throw an exception if necessary
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
     protected Task task;
@@ -24,8 +21,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     protected SubTask subTask2;
     protected T manager;
 
+
+    abstract public T getManager();
+
     @BeforeEach // ревьюрер предлагал создать метод BeforeEach
     protected void init() {
+        manager=getManager();
         task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
         task4 = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 9, LocalDateTime.of(2023, 9, 1, 00, 00, 00));
         epic = new Epic("Test addNewTask", "Test addNewTask description");

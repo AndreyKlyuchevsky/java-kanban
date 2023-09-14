@@ -83,6 +83,12 @@ public class Epic extends Task {
 
     }
 
+    @Override
+    public int getEpicId() {
+        return getId(); // Return the ID of the epic
+    }
+
+
     public void removeSubtaskAll() {
         subTaskList.clear();
     }

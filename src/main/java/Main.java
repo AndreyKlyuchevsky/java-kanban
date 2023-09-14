@@ -1,7 +1,5 @@
 
-import com.google.gson.Gson;
 import manager.file.FileBackedTasksManager;
-import manager.server.HttpTaskServer;
 import manager.server.KVServer;
 import model.Epic;
 import model.StatusTask;
@@ -11,21 +9,16 @@ import model.Task;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.TreeSet;
 
 
 public class Main {
-    private static final String URL = "http://localhost:8080/tasks/task?id=1";
 
     public static void main(String[] args) throws IOException {
         KVServer server = new KVServer();
 
         server.start();
         FileBackedTasksManager taskManagerOld = new FileBackedTasksManager("filewriter.csv");
-        HttpTaskServer httpTaskServer = new HttpTaskServer(taskManagerOld, new Gson());
-        httpTaskServer.start();
-
-
 
         Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
         Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
@@ -43,7 +36,7 @@ public class Main {
 
         //создаем подзадачи
 
-        SubTask subtask1 = new SubTask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId(), 8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
+        SubTask subtask1 = new SubTask("Первая подзадача", "очень важная первая подзадача 1 Epic", StatusTask.DONE, epic1.getId(), 8, LocalDateTime.of(2023, 9, 17, 00, 00, 00));
         SubTask subtask2 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId(), 2, LocalDateTime.of(2023, 9, 15, 00, 00, 00));
 
         SubTask subtask5 = new SubTask("Вторая подзадача", "очень важная вторая подзадача 1 Epic", StatusTask.DONE, epic1.getId(), 15, LocalDateTime.of(2023, 9, 21, 00, 00, 00));
@@ -84,27 +77,30 @@ public class Main {
         boolean EpicBoolean = testTaskCompare(taskManagerOld.getEpicAll(), taskManagerNew.getEpicAll());
         boolean SubTaskBoolean = testTaskCompare(taskManagerOld.getSubTaskAll(), taskManagerNew.getSubTaskAll());
         boolean HistoryBoolean = testTaskCompare(taskManagerOld.getTaskAll(), taskManagerNew.getTaskAll());
+        boolean taskTreeSetBoolean = testTaskCompare(taskManagerOld.getPrioritizedTasks(), taskManagerNew.getPrioritizedTasks());
         System.out.println("Результат проверки Task: " + taskBoolean);
         System.out.println("Результат проверки Epic: " + EpicBoolean);
         System.out.println("Результат проверки Sub: " + SubTaskBoolean);
         System.out.println("Результат проверки HistoryTask: " + HistoryBoolean);
-
+        System.out.println("Результат проверки TaskTreeSet: " + taskTreeSetBoolean);
     }
-
 
     private static <T extends Task> boolean testTaskCompare(List<T> taskListOld, List<T> taskListNew) {
-
-        for (Task taskNew : taskListNew) {
-            for (Task taskOld : taskListOld) {
-                if (taskOld.getId() == taskNew.getId()) {
-                    if (!taskOld.equals(taskNew)) {
-                        return false;
-                    }
-                    break;
-                }
-            }
+        if (taskListOld.size() != taskListNew.size()) {
+            return false;
         }
-        return true;
-    }
 
+        TreeSet<Integer> taskIdsOld = new TreeSet<>();
+        TreeSet<Integer> taskIdsNew = new TreeSet<>();
+
+        for (T task : taskListOld) {
+            taskIdsOld.add(task.getId());
+        }
+
+        for (T task : taskListNew) {
+            taskIdsNew.add(task.getId());
+        }
+
+        return taskIdsOld.equals(taskIdsNew);
+    }
 }
