@@ -1,6 +1,5 @@
 package manager.server;
 
-import manager.mem.InMemoryTaskManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +22,10 @@ public class HttpTaskServerTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        // Запуск HttpTaskServer перед каждым тестом
+        FileBackedTasksManager manager = new FileBackedTasksManager("test_data.json");
         Gson gson = new Gson();
-        httpTaskServer = new HttpTaskServer((FileBackedTasksManager) manager, gson);
+        httpTaskServer = new HttpTaskServer(manager, gson);
         httpTaskServer.start();
     }
 

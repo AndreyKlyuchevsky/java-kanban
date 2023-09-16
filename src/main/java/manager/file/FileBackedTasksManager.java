@@ -21,7 +21,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
     }
 
-    //не проверял
+
     public static void loadTasksFromFile(FileBackedTasksManager manager) {
         boolean first = true;
         try (BufferedReader reader = new BufferedReader(new FileReader(manager.path))) {

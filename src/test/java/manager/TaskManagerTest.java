@@ -24,7 +24,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     abstract public T getManager();
 
-    @BeforeEach // ревьюрер предлагал создать метод BeforeEach
+    @BeforeEach
     protected void init() {
         manager=getManager();
         task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
@@ -42,12 +42,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.addTask(task4);
         final int taskId = task.getId();
         final Task savedTask = manager.getTaskById(taskId);
+        final List<Task> taskList = manager.getTaskAll();
 
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
-
-        final List<Task> taskList = manager.getTaskAll();
-
         assertEquals(2, taskList.size(), "Неверное количество задач.");
 
         for (Task tasks : taskList) {
@@ -84,15 +82,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void getUpdateTaskTest() {
         manager.addTask(task);
         final int taskId = task.getId();
-        Task savedTask = manager.getTaskById(taskId);
-
-        assertNotNull(savedTask, "Задача не найдена.");
-        assertEquals(task, savedTask, "Задачи не совпадают.");
-
         Task taskNew = new Task("Test addNewTask", "Test addNewTask description", taskId, StatusTask.DONE, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
-        manager.updateTask(taskNew);
-        Task savedTaskNew = manager.getTaskById(taskId);
 
+        manager.updateTask(taskNew);
+
+        Task savedTaskNew = manager.getTaskById(taskId);
         assertEquals(taskNew, savedTaskNew, "Задачи не совпадают.");
     }
 
@@ -104,10 +98,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final int taskId = task.getId();
         List<Task> tasks = manager.getTaskAll();
 
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-
         manager.removeTaskById(taskId);
-        tasks = manager.getTaskAll();
+        tasks = manager.getTaskAll(); //заменить метод getTaskAll не должно быть
         assertEquals(0, tasks.size(), "Неверное количество задач.");
     }
 
