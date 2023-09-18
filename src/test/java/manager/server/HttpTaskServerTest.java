@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -83,7 +84,7 @@ public class HttpTaskServerTest {
                 .build();
 
         // Выполнение запроса
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Проверка статуса ответа
         assertEquals(200, response.statusCode());

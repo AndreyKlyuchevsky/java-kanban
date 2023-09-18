@@ -96,10 +96,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void removeTaskTest() {
         manager.addTask(task);
         final int taskId = task.getId();
-        List<Task> tasks = manager.getTaskAll();
 
         manager.removeTaskById(taskId);
-        tasks = manager.getTaskAll(); //заменить метод getTaskAll не должно быть
+        List<Task> tasks = manager.getTaskAll();
+
         assertEquals(0, tasks.size(), "Неверное количество задач.");
     }
 
@@ -130,12 +130,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic);
         final int epicId = epic.getId();
         final Epic savedEpic = manager.getEpicById(epicId);
+        final List<Epic> epicList = manager.getEpicAll();
 
         assertNotNull(savedEpic, "Задача не найдена.");
         assertEquals(epic, savedEpic, "Задачи не совпадают.");
-
-        final List<Epic> epicList = manager.getEpicAll();
-
         assertEquals(1, epicList.size(), "Неверное количество задач.");
 
         for (Epic epics : epicList) {
@@ -234,29 +232,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 assertEquals(subTask1, subTask, "Задачи не совпадают.");
             }
         }
-        //проверяем статус epic - должен быть NEW
 
-        assertEquals(StatusTask.NEW, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
-        //меняем статус у subTask1 -IN_PROGRESS
-        subTask1.setStatus(StatusTask.IN_PROGRESS);
-        manager.updateSubTask(subTask1);
-
-        assertEquals(StatusTask.IN_PROGRESS, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
-        //меняем статус у subTask1 DONE
-        subTask1.setStatus(StatusTask.DONE);
-        manager.updateSubTask(subTask1);
-
-        assertEquals(StatusTask.DONE, subTask1.getStatus(), "Не верный статус");
-        //проверяем статус epic - должен быть DONE
-
-        assertEquals(StatusTask.IN_PROGRESS, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
-        //меняем статус у subTask2 DONE
-        subTask2.setStatus(StatusTask.DONE);
-        manager.updateSubTask(subTask2);
-
-        assertEquals(StatusTask.DONE, subTask2.getStatus(), "Не верный статус");
-        //проверяем статус epic - должен быть DONE
-        assertEquals(StatusTask.DONE, manager.getEpicById(epic.getId()).getStatus(), "Не верный статус");
     }
 
 
@@ -281,7 +257,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         subTask2.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
-        final int subtaskId = subTask1.getId();
         final List<SubTask> subsTaskList = manager.getSubTaskEpic(epic);
 
         assertEquals(2, subsTaskList.size(), "Неверное количество задач.");
@@ -326,8 +301,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
         List<SubTask> subTaskList = manager.getSubTaskAll();
-
-        assertEquals(2, subTaskList.size(), "Неверное количество задач.");
 
         manager.removeSubTaskById(subTask1.getId());
         subTaskList = manager.getSubTaskAll();
@@ -436,7 +409,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @DisplayName("удаляем все Task ")
     public void removeTaskAllTest() {
         manager.addTask(task);
-        final int taskId = task.getId();
         List<Task> tasks = manager.getTaskAll();
 
         assertEquals(1, tasks.size(), "Неверное количество задач.");

@@ -84,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void removeTaskTreeSet(Task task) {
-        if (!taskTreeSet.contains(task)) {
+        if (taskTreeSet.contains(task)) {
             taskTreeSet.remove(task);
         }
     }
