@@ -256,7 +256,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         subTask1.setEpicId(epic.getId());
         subTask2.setEpicId(epic.getId());
         manager.addSubTask(subTask1);
-        manager.addSubTask(subTask2);
+        manager.addSubTask(subTask2);   
         final List<SubTask> subsTaskList = manager.getSubTaskEpic(epic);
 
         assertEquals(2, subsTaskList.size(), "Неверное количество задач.");

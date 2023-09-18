@@ -51,7 +51,7 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Проверка статуса ответа
-        assertEquals(200, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Проверка статуса ответа
-        assertEquals(200, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class HttpTaskServerTest {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Проверка статуса ответа
-        assertEquals(200, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Проверка статуса ответа
-        assertEquals(200, response.statusCode());
+        assertEquals(HttpURLConnection.HTTP_OK, response.statusCode());
     }
 
 }
