@@ -1,37 +1,74 @@
-    package manager.http;
+package manager.http;
 
-    import com.google.gson.Gson;
-    import manager.client.TaskClient;
-    import manager.file.FileBackedTasksManager;
-    import manager.client.KVTaskClient;
+import com.google.gson.Gson;
+import manager.TaskManager;
+import manager.client.TaskClient;
+import manager.client.TaskManagerState;
+import manager.file.FileBackedTasksManager;
+import manager.client.KVTaskClient;
+import model.Task;
 
-    public class HttpTaskManager extends FileBackedTasksManager {
-        private final TaskClient client;
+import java.util.ArrayList;
+import java.util.List;
 
-        public HttpTaskManager(String serverUrl) {
-            super(serverUrl);
-            // Инициализация клиента KVTaskClient с указанным URL сервера
-            this.client = new KVTaskClient(serverUrl);
+public class HttpTaskManager extends FileBackedTasksManager {
+    private final TaskClient client;
+
+    public HttpTaskManager(String serverUrl) {
+        super("");
+        this.client = new KVTaskClient(serverUrl);
+    }
+
+    public HttpTaskManager(TaskClient client) {
+        super("");
+        this.client = client;
+    }
+
+    @Override
+    public void save() {
+        // Конвертируем текущее состояние менеджера в JSON
+        TaskManagerState taskManagerState = new TaskManagerState();
+        taskManagerState.setTaskMap(this.taskMap);
+        taskManagerState.setSubTaskMap(this.subTaskMap);
+        taskManagerState.setEpicMap(this.epicMap);
+        List<Integer> history = new ArrayList<>();
+
+        for (Task tasks : super.getHistory()) {
+            history.add(tasks.getId());
         }
 
-        public HttpTaskManager(TaskClient client) {
-            super("");
-            // Инициализация клиента KVTaskClient с указанным URL сервера
-            this.client = client;
-        }
+        taskManagerState.setHistory(history);
 
-        @Override
-        public void save() {
-            // Конвертируем текущее состояние менеджера в JSON
+        Gson gson = new Gson();
+        String managerStateJson = gson.toJson(taskManagerState);
+
+        // Отправляем состояние менеджера на сервер KVServer
+        client.put("task_manager_state", managerStateJson);
+    }
+
+
+    public void load() {
+        // Загружаем JSON-состояние менеджера с сервера
+        String managerStateJson = client.load("task_manager_state");
+
+        if (managerStateJson != null) {
+            // Если JSON-состояние получено, пытаемся преобразовать его обратно в объект TaskManagerState
             Gson gson = new Gson();
-            String managerStateJson = gson.toJson(this);
+            TaskManagerState taskManagerState = gson.fromJson(managerStateJson, TaskManagerState.class);
 
-            // Отправляем состояние менеджера на сервер KVServer
-            client.put("task_manager_state", managerStateJson);
-        }
+            if (taskManagerState != null) {
+                // Если преобразование удалось, устанавливаем состояние менеджера
+                this.taskMap = taskManagerState.getTaskMap();
+                this.subTaskMap = taskManagerState.getSubTaskMap();
+                this.epicMap = taskManagerState.getEpicMap();
 
-
-        public TaskClient getClient() {
-            return client;
+                // Восстанавливаем историю задач
+                List<Integer> history = taskManagerState.getHistory();
+                for (int taskId : history) {
+                    this.getTaskById(taskId);
+                }
+            }
         }
     }
+
+}

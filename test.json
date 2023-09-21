@@ -1,0 +1,28 @@
+{
+  "taskMap": {
+    "1": {
+      "name": "Первая задача",
+      "description": "очень важная первая задача",
+      "id": 1,
+      "status": "NEW",
+      "type": "TASK",
+      "duration": 8,
+      "startTime": {
+        "date": {
+          "year": 2023,
+          "month": 9,
+          "day": 12
+        },
+        "time": {
+          "hour": 0,
+          "minute": 0,
+          "second": 0,
+          "nano": 0
+        }
+      }
+    }
+  },
+  "epicMap": {},
+  "subTaskMap": {},
+  "history": []
+}

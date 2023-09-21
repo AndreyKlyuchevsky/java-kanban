@@ -5,8 +5,7 @@ import manager.mem.InMemoryHistoryManager;
 
 public class Managers {
 
-    public TaskManager getDefault() {
-
+    public static TaskManager getDefault() {
         return new HttpTaskManager("http://localhost:8078");
     }
 

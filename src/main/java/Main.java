@@ -1,4 +1,6 @@
 
+import manager.Managers;
+import manager.TaskManager;
 import manager.file.FileBackedTasksManager;
 import manager.server.KVServer;
 import model.Epic;
@@ -18,7 +20,8 @@ public class Main {
         KVServer server = new KVServer();
 
         server.start();
-        FileBackedTasksManager taskManagerOld = new FileBackedTasksManager("filewriter.csv");
+       // FileBackedTasksManager taskManagerOld = new FileBackedTasksManager("filewriter.csv");
+        TaskManager taskManagerOld = Managers.getDefault();
 
         Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
         Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 8, 00, 00, 00));

@@ -14,9 +14,9 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
-    protected final Map<Integer, Task> taskMap = new HashMap<>();
-    protected final Map<Integer, Epic> epicMap = new HashMap<>();
-    protected final Map<Integer, SubTask> subTaskMap = new HashMap<>();
+    protected Map<Integer, Task> taskMap = new HashMap<>();
+    protected Map<Integer, Epic> epicMap = new HashMap<>();
+    protected Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private final HistoryManager history = new Managers().getDefaultHistory();
     private final TreeSet<Task> taskTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
