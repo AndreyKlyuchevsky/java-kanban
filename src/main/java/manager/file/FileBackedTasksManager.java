@@ -21,6 +21,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
     }
 
+    public void load(){
+        loadTasksFromFile(this);
+    }
 
     public static void loadTasksFromFile(FileBackedTasksManager manager) {
         boolean first = true;

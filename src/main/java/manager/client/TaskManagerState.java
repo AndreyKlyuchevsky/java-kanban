@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TaskManagerState {
-    private   Map<Integer, Task> taskMap = new HashMap<>();
+    private  Map<Integer, Task> taskMap = new HashMap<>();
     private  Map<Integer, Epic> epicMap = new HashMap<>();
     private  Map<Integer, SubTask> subTaskMap = new HashMap<>();
 

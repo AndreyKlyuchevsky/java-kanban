@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.TaskManager;
 import manager.file.FileBackedTasksManager;
 import model.Epic;
 import model.SubTask;
@@ -18,11 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class EpicHandler implements HttpHandler {
-    private final FileBackedTasksManager taskManager;
+    private final TaskManager taskManager;
     private final Gson gson;
-    private static final int INVALID_ID = -1;
 
-    public EpicHandler(FileBackedTasksManager manager, Gson gson) {
+    public EpicHandler(TaskManager manager, Gson gson) {
         this.taskManager = manager;
         this.gson = gson;
     }
@@ -30,22 +30,22 @@ public class EpicHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
-        String path = exchange.getRequestURI().getPath();
-        int id = extractIdFromPath(path);
 
         try {
             if (method.equals("GET")) {
-                if (id == INVALID_ID) {
-                    // Запрос на получение всех SubTask
+                String path = exchange.getRequestURI().getQuery();
+                Integer id = extractIdFromPath(path);
+                if (id == null) {
+                    // Запрос на получение всех Epic
                     List<SubTask> subTasks = taskManager.getSubTaskAll();
                     sendResponse(exchange, gson.toJson(subTasks), HttpURLConnection.HTTP_OK);
                 } else {
                     // Запрос на получение конкретного SubTask по ID
-                    SubTask subTask = taskManager.getSubtaskById(id);
-                    if (subTask != null) {
-                        sendResponse(exchange, gson.toJson(subTask), HttpURLConnection.HTTP_OK);
+                    Epic epic = taskManager.getEpicById(id);
+                    if (epic != null) {
+                        sendResponse(exchange, gson.toJson(epic), HttpURLConnection.HTTP_OK);
                     } else {
-                        sendResponse(exchange, "SubTask not found", HttpURLConnection.HTTP_NOT_FOUND);
+                        sendResponse(exchange, "Epic not found", HttpURLConnection.HTTP_NOT_FOUND);
                     }
                 }
             }
@@ -55,9 +55,9 @@ public class EpicHandler implements HttpHandler {
                 Epic newEpic = parseEpicFromBody(exchange);
 
                 if (newEpic != null) {
-                    int epicId = extractEpicIdFromRequest(exchange);
+                    Integer epicId = extractEpicIdFromRequest(exchange);
 
-                    if (epicId != INVALID_ID) {
+                    if (epicId != null) {
                         // Если есть корректный id, это запрос на обновление
                         taskManager.updateEpic(newEpic);
                         sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK ); // Отправляем код 200 OK
@@ -69,12 +69,13 @@ public class EpicHandler implements HttpHandler {
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления Epic
-                int epicId = extractEpicIdFromRequest(exchange);
-                if (epicId != INVALID_ID) {
+                Integer epicId = extractEpicIdFromRequest(exchange);
+                if (epicId != null) {
                     taskManager.removeEpicById(epicId);
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 } else {
                     // ID не найден или неверного формата, отправляем ошибку
+
                     sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
                 }
             }
@@ -86,7 +87,7 @@ public class EpicHandler implements HttpHandler {
         }
     }
 
-    private int extractIdFromPath(String path) {
+    private Integer extractIdFromPath(String path) {
         try {
             String[] parts = path.split("/");
             if (parts.length >= 3) {
@@ -95,17 +96,17 @@ public class EpicHandler implements HttpHandler {
         } catch (NumberFormatException e) {
             // Произошла ошибка при парсинге ID
         }
-        return -1;
+        return null;
     }
 
-    private int extractEpicIdFromRequest(HttpExchange exchange) {
+    private Integer extractEpicIdFromRequest(HttpExchange exchange) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParams = query.split("=");
         if (queryParams.length == 2 && "id".equals(queryParams[0])) {
             return Integer.parseInt(queryParams[1]);
         }
         // ID не найден или неверного формата
-        return -1;
+        return null;
     }
 
     private Epic parseEpicFromBody(HttpExchange exchange) throws IOException {
@@ -135,7 +136,7 @@ public class EpicHandler implements HttpHandler {
     }
 
     private void sendEmptyResponse(HttpExchange exchange, int statusCode) throws IOException {
-        exchange.sendResponseHeaders(statusCode, -1);
+        exchange.sendResponseHeaders(statusCode, 0);
     }
 
     private void sendErrorResponse(HttpExchange exchange, int statusCode, String errorMessage) throws IOException {

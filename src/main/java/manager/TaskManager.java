@@ -9,11 +9,16 @@ import java.util.List;
 
 public interface TaskManager {
 
+
     void addTask(Task task);
 
     void addEpic(Epic epic);
 
     void addSubTask(SubTask subtask);
+
+    void load();
+
+    void save();
 
     void updateTask(Task task);
 
@@ -50,4 +55,5 @@ public interface TaskManager {
     List<Task> getHistory();
 
     List<Task> getPrioritizedTasks();
+
 }

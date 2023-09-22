@@ -24,6 +24,17 @@ public class InMemoryTaskManager implements TaskManager {
         return id++;
     }
 
+
+    @Override
+    public void load() {
+
+    }
+
+    @Override
+    public void save() {
+
+    }
+
     @Override
     public void addTask(Task task) {
         validateTaskDurationInterval(task);

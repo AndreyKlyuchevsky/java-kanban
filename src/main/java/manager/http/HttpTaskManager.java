@@ -1,7 +1,6 @@
 package manager.http;
 
 import com.google.gson.Gson;
-import manager.TaskManager;
 import manager.client.TaskClient;
 import manager.client.TaskManagerState;
 import manager.file.FileBackedTasksManager;
@@ -13,6 +12,7 @@ import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     private final TaskClient client;
+
 
     public HttpTaskManager(String serverUrl) {
         super("");
@@ -46,7 +46,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         client.put("task_manager_state", managerStateJson);
     }
 
-
+    @Override
     public void load() {
         // Загружаем JSON-состояние менеджера с сервера
         String managerStateJson = client.load("task_manager_state");
@@ -61,7 +61,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 this.taskMap = taskManagerState.getTaskMap();
                 this.subTaskMap = taskManagerState.getSubTaskMap();
                 this.epicMap = taskManagerState.getEpicMap();
-
+                this.taskMap.forEach((key, value) -> {
+                    this.resetTaskTreeSet(value);
+                });
+                this.subTaskMap.forEach((key, value) -> {
+                    this.resetTaskTreeSet(value);
+                });
                 // Восстанавливаем историю задач
                 List<Integer> history = taskManagerState.getHistory();
                 for (int taskId : history) {

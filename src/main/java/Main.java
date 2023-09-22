@@ -73,8 +73,12 @@ public class Main {
         System.out.println("удаляем Epic");
         taskManagerOld.removeTaskById(epic1.getId());
         System.out.println(taskManagerOld.getHistory());
+        taskManagerOld.save();
 
-        FileBackedTasksManager taskManagerNew = FileBackedTasksManager.loadFromFile("filewriter.csv");
+        TaskManager taskManagerNew = Managers.getDefault();
+
+        taskManagerNew.load();
+
 
         boolean taskBoolean = testTaskCompare(taskManagerOld.getTaskAll(), taskManagerNew.getTaskAll());
         boolean EpicBoolean = testTaskCompare(taskManagerOld.getEpicAll(), taskManagerNew.getEpicAll());

@@ -25,8 +25,7 @@ public class HttpTaskServerTest {
     void setUp() throws IOException {
         // Запуск HttpTaskServer перед каждым тестом
         FileBackedTasksManager manager = new FileBackedTasksManager("test_data.json");
-        Gson gson = new Gson();
-        httpTaskServer = new HttpTaskServer(manager, gson);
+        httpTaskServer = new HttpTaskServer(manager);
         httpTaskServer.start();
     }
 

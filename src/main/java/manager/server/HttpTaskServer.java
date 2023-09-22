@@ -2,8 +2,10 @@ package manager.server;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
+import manager.TaskManager;
 import manager.file.FileBackedTasksManager;
 import com.google.gson.Gson;
+import manager.http.HttpTaskManager;
 import manager.server.handler.EpicHandler;
 import manager.server.handler.HistoryHandler;
 import manager.server.handler.SubTaskHandler;
@@ -15,12 +17,18 @@ import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
+    private static final String DEFAULT_FILE_PATH= "filewriter.csv";
     private final HttpServer server;
+    private final Gson gson;
 
-    public HttpTaskServer(FileBackedTasksManager manager, Gson gson) throws IOException {
+    public HttpTaskServer() throws IOException {
+        this(new FileBackedTasksManager(DEFAULT_FILE_PATH));
+    }
+
+    public HttpTaskServer(TaskManager manager) throws IOException {
         // Создаем HTTP-сервер и привязываем его к порту 8080
         server = HttpServer.create(new InetSocketAddress(PORT), 0);
-
+        gson= new Gson();
         // Добавляем обработчики для различных типов задач
         HttpHandler taskHandler = new TaskHandler(manager, gson);
         HttpHandler subTaskHandler = new SubTaskHandler(manager, gson);
