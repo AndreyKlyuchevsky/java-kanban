@@ -1,15 +1,14 @@
 package manager.server.handler;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
-import manager.file.FileBackedTasksManager;
-import model.Epic;
 import model.SubTask;
-import com.google.gson.Gson;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -32,16 +31,16 @@ public class SubTaskHandler implements HttpHandler {
                 String path = exchange.getRequestURI().getQuery();
                 Integer id = extractIdFromPath(path);
                 if (id == null) {
-                    // Запрос на получение всех Epic
+                    // Запрос на получение всех SubTask
                     List<SubTask> subTasks = manager.getSubTaskAll();
                     sendResponse(exchange, gson.toJson(subTasks), HttpURLConnection.HTTP_OK);
                 } else {
                     // Запрос на получение конкретного SubTask по ID
-                    Epic epic = manager.getEpicById(id);
-                    if (epic != null) {
-                        sendResponse(exchange, gson.toJson(epic), HttpURLConnection.HTTP_OK);
+                    SubTask subtask = manager.getSubtaskById(id);
+                    if (subtask != null) {
+                        sendResponse(exchange, gson.toJson(subtask), HttpURLConnection.HTTP_OK);
                     } else {
-                        sendResponse(exchange, "Epic not found", HttpURLConnection.HTTP_NOT_FOUND);
+                        sendResponse(exchange, "SubTask not found", HttpURLConnection.HTTP_NOT_FOUND);
                     }
                 }
             }
@@ -51,9 +50,9 @@ public class SubTaskHandler implements HttpHandler {
                 SubTask newSubtask = parseSubtaskFromBody(exchange);
 
                 if (newSubtask != null) {
-                    Integer SubtaskId = extractSubtaskIdFromRequest(exchange);
+                    Integer subtaskId = extractSubtaskIdFromRequest(exchange);
 
-                    if (SubtaskId != null) {
+                    if (subtaskId != null) {
                         // Если есть корректный id, это запрос на обновление
                         manager.updateSubTask(newSubtask);
                         sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK ); // Отправляем код 200 OK
@@ -64,25 +63,23 @@ public class SubTaskHandler implements HttpHandler {
                     }
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
-                // Обработка DELETE-запроса для удаления Epic
-                Integer epicId = extractSubtaskIdFromRequest(exchange);
-                if (epicId != null) {
-                    manager.removeEpicById(epicId);
+                // Обработка DELETE-запроса для удаления SubTask
+                Integer subtaskId = extractSubtaskIdFromRequest(exchange);
+                if (subtaskId != null) {
+                    manager.removeSubTaskById(subtaskId);
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 } else {
                     // ID не найден или неверного формата, отправляем ошибку
-
-                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
+                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid SubTask ID");
                 }
             }
         } catch (NumberFormatException e) {
             // Неправильный формат ID, отправляем ошибку
-            sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
+            sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid SubTask ID");
         } finally {
             exchange.close();
         }
     }
-
 
     private Integer extractIdFromPath(String path) {
         try {
@@ -107,7 +104,7 @@ public class SubTaskHandler implements HttpHandler {
     }
 
     private SubTask parseSubtaskFromBody(HttpExchange exchange) throws IOException {
-        // Распарсивание Epic из JSON-тела запроса
+        // Распарсивание SubTask из JSON-тела запроса
         String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         try {
             return gson.fromJson(requestBody, SubTask.class);

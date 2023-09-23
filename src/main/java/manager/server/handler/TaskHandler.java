@@ -1,16 +1,14 @@
 package manager.server.handler;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
-import manager.file.FileBackedTasksManager;
-import model.Epic;
-import model.SubTask;
 import model.Task;
-import com.google.gson.Gson;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,52 +31,51 @@ public class TaskHandler implements HttpHandler {
                 String path = exchange.getRequestURI().getQuery();
                 Integer id = extractIdFromPath(path);
                 if (id == null) {
-                    // Запрос на получение всех Epic
-                    List<SubTask> subTasks = manager.getSubTaskAll();
-                    sendResponse(exchange, gson.toJson(subTasks), HttpURLConnection.HTTP_OK);
+                    // Запрос на получение всех Task
+                    List<Task> tasks = manager.getTaskAll();
+                    sendResponse(exchange, gson.toJson(tasks), HttpURLConnection.HTTP_OK);
                 } else {
-                    // Запрос на получение конкретного SubTask по ID
-                    Epic epic = manager.getEpicById(id);
-                    if (epic != null) {
-                        sendResponse(exchange, gson.toJson(epic), HttpURLConnection.HTTP_OK);
+                    // Запрос на получение конкретного Task по ID
+                    Task task = manager.getTaskById(id);
+                    if (task != null) {
+                        sendResponse(exchange, gson.toJson(task), HttpURLConnection.HTTP_OK);
                     } else {
-                        sendResponse(exchange, "Epic not found", HttpURLConnection.HTTP_NOT_FOUND);
+                        sendResponse(exchange, "Task not found", HttpURLConnection.HTTP_NOT_FOUND);
                     }
                 }
             }
 
             if ("POST".equals(exchange.getRequestMethod())) {
-                // Обработка POST-запроса для создания или обновления Epic
+                // Обработка POST-запроса для создания или обновления Task
                 Task newTask = parseTaskFromBody(exchange);
 
                 if (newTask != null) {
-                    Integer epicId = extractTaskIdFromRequest(exchange);
+                    Integer taskId = extractTaskIdFromRequest(exchange);
 
-                    if (epicId != null) {
+                    if (taskId != null) {
                         // Если есть корректный id, это запрос на обновление
                         manager.updateTask(newTask);
                         sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK ); // Отправляем код 200 OK
                     } else {
-                        // Иначе, это запрос на создание нового Epic
+                        // Иначе, это запрос на создание нового Task
                         manager.addTask(newTask);
                         sendJsonResponse(exchange, gson.toJson(newTask), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
                     }
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
-                // Обработка DELETE-запроса для удаления Epic
-                Integer epicId = extractTaskIdFromRequest(exchange);
-                if (epicId != null) {
-                    manager.removeEpicById(epicId);
+                // Обработка DELETE-запроса для удаления Task
+                Integer taskId = extractTaskIdFromRequest(exchange);
+                if (taskId != null) {
+                    manager.removeTaskById(taskId);
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 } else {
                     // ID не найден или неверного формата, отправляем ошибку
-
-                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
+                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Task ID");
                 }
             }
         } catch (NumberFormatException e) {
             // Неправильный формат ID, отправляем ошибку
-            sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
+            sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Task ID");
         } finally {
             exchange.close();
         }
@@ -106,11 +103,11 @@ public class TaskHandler implements HttpHandler {
         return null;
     }
 
-    private SubTask parseTaskFromBody(HttpExchange exchange) throws IOException {
+    private Task parseTaskFromBody(HttpExchange exchange) throws IOException {
         // Распарсивание Task из JSON-тела запроса
         String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         try {
-            return gson.fromJson(requestBody, SubTask.class);
+            return gson.fromJson(requestBody, Task.class);
         } catch (JsonSyntaxException e) {
             // Если формат JSON неверный, отправляем ошибку и возвращаем null
             sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid JSON format");

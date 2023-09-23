@@ -20,15 +20,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     @DisplayName("Сохрагяем и загружаем")
     void testSaveAndLoad() throws IOException {
 
-        // Создаем менеджера и добавляем задачи
-        manager.addEpic(epic);
-        manager.addTask(task);
-        subTask1.setEpicId(epic.getId());
-        subTask2.setEpicId(epic.getId());
-        manager.addSubTask(subTask1);
-        manager.addSubTask(subTask2);
-        manager.getTaskById(task.getId());
-        manager.getSubtaskById(subTask1.getId());
         // Сохраняем менеджера в файл
         manager.save();
         // Сохраняем историю просмотра

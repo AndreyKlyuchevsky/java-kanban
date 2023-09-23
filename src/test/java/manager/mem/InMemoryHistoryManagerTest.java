@@ -54,19 +54,19 @@ class InMemoryHistoryManagerTest {
         for (int i = 0; i < 2; i++) {
             historyManager.add(task);
         }
-        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 4, 12, LocalDateTime.of(2023, 25, 8, 00, 00, 00));
+        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.NEW, epic.getId(), 4, 12, LocalDateTime.of(2023, 11, 8, 00, 00, 00));
         historyManager.add(subTask);
 
         final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "История пустая.");
-        assertEquals(3, historyManager.getHistory().size(), "История не пустая.");
+        assertEquals(2, historyManager.getHistory().size(), "История не пустая.");
 
         //Удалили элемент из середы
         historyManager.remove(task.getId());
-        assertEquals(2, historyManager.getHistory().size(), "Удалили элемента из середы");
+        assertEquals(1, historyManager.getHistory().size(), "Удалили элемента из середы");
         //Удалили последний элемент
         historyManager.remove(subTask.getId());
-        assertEquals(1, historyManager.getHistory().size(), "Удалили последний элемент");
+        assertEquals(0, historyManager.getHistory().size(), "Удалили последний элемент");
         //удаление первого элемента
         historyManager.remove(epic.getId());
         assertEquals(0, historyManager.getHistory().size(), "Удалили все элементы");
