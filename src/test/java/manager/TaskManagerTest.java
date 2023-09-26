@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     abstract public T getManager();
 
     @BeforeEach
-    protected void init() {
+    protected void init() throws IOException {
         manager = getManager();
         task = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 40, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
         task4 = new Task("Test addNewTask", "Test addNewTask description", StatusTask.NEW, 9, LocalDateTime.of(2023, 9, 1, 00, 00, 00));
@@ -71,6 +72,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final List<Task> taskList = manager.getTaskAll();
 
         assertEquals(3, taskList.size(), "Неверное количество задач.");
+    }
+
+    @Test
+    @DisplayName("вернуть Task задачу - Null")
+    public void getTaskByIdTestNull() {
+        manager.addTask(task);
+        final Task savedTask = manager.getTaskById(0);
+        assertNull(savedTask, "Задача не найдена.");
     }
 
     @Test
@@ -162,6 +171,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+    @DisplayName("вернуть Epic задачу - Null")
+    public void getEpicByIdTestNull() {
+        manager.addEpic(epic);
+        final Epic savedEpic = manager.getEpicById(0);
+        assertNull(savedEpic, "Задача не найдена.");
+    }
+
+    @Test
     @DisplayName("вернуть Epic")
     public void getEpicAllTest() {
         final List<Epic> epicList = manager.getEpicAll();
@@ -232,6 +249,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+    @DisplayName("вернуть SubtaskTask задачу - Null")
+    public void getSubTaskByIdTestNull() {
+        manager.addSubTask(subTask1);
+        final SubTask savedSubTask = manager.getSubtaskById(0);
+        assertNull(savedSubTask, "Задача не найдена.");
+    }
+
+    @Test
     @DisplayName("вернуть SubTask конкретного Epic")
     public void getSubtaskEpicTest() {
         final List<SubTask> subsTaskList = manager.getSubTaskEpic(epic);
@@ -249,7 +274,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("обновляем SubTask")
-    public void updateSubTaskTest() {
+    public void     updateSubTaskTest() {
         final int subtaskId = subTask1.getId();
         SubTask subTask3 = new SubTask("Test addNewTask", "Test addNewTask description", StatusTask.DONE, subtaskId, epic.getId(), 12, LocalDateTime.of(2023, 12, 9, 00, 00, 00));
         manager.updateSubTask(subTask3);

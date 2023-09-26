@@ -28,8 +28,8 @@ public class EpicHandler implements HttpHandler {
 
         try {
             if (method.equals("GET")) {
-                String path = exchange.getRequestURI().getQuery();
-                Integer id = extractIdFromPath(path);
+
+                Integer id = extractEpicIdFromRequest(exchange);
                 if (id == null) {
                     // Запрос на получение всех Epic
                     List<Epic> epics = taskManager.getEpicAll();
@@ -50,9 +50,7 @@ public class EpicHandler implements HttpHandler {
                 Epic newEpic = parseEpicFromBody(exchange);
 
                 if (newEpic != null) {
-                    Integer epicId = extractEpicIdFromRequest(exchange);
-
-                    if (epicId != null) {
+                    if (newEpic.getId() != null) {
                         // Если есть корректный id, это запрос на обновление
                         taskManager.updateEpic(newEpic);
                         sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK); // Отправляем код 200 OK
@@ -61,6 +59,9 @@ public class EpicHandler implements HttpHandler {
                         taskManager.addEpic(newEpic);
                         sendJsonResponse(exchange, gson.toJson(newEpic), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
                     }
+                }else{
+                    // Объект не найден или неверного формата, отправляем ошибку
+                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic object");
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления Epic
@@ -70,7 +71,8 @@ public class EpicHandler implements HttpHandler {
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 } else {
                     // ID не найден или неверного формата, отправляем ошибку
-                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic ID");
+                    taskManager.removeEpicAll();
+                    sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 }
             }
         } catch (NotFoundException e) {
@@ -79,21 +81,22 @@ public class EpicHandler implements HttpHandler {
         } catch (JsonSyntaxException e) {
             // Ошибка синтаксиса JSON, отправляем ошибку HTTP_BAD_REQUEST
             sendErrorResponse(exchange, HttpURLConnection.HTTP_BAD_REQUEST, "Invalid JSON format");
-        } finally {
+        } catch (Exception e) {
+            // Ошибка синтаксиса JSON, отправляем ошибку HTTP_BAD_REQUEST
+            sendErrorResponse(exchange, HttpURLConnection.HTTP_BAD_REQUEST, "Invalid request");
+        }
+
+
+        finally {
             exchange.close();
         }
     }
 
-    private Integer extractIdFromPath(String path) {
-        String[] parts = path.split("/");
-        if (parts.length >= 3) {
-            return Integer.parseInt(parts[2]);
-        }
-        return null;
-    }
-
     private Integer extractEpicIdFromRequest(HttpExchange exchange) {
         String query = exchange.getRequestURI().getQuery();
+        if (query == null) {
+            return null;
+        }
         String[] queryParams = query.split("=");
         if (queryParams.length == 2 && "id".equals(queryParams[0])) {
             return Integer.parseInt(queryParams[1]);

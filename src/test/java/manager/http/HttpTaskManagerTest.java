@@ -1,20 +1,22 @@
 package manager.http;
 
-import manager.FakeTaskClient;
+import manager.client.FakeTaskClient;
 import manager.TaskManagerTest;
+import manager.client.TaskClient;
 import model.StatusTask;
 import model.Task;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
+    protected TaskClient client = new FakeTaskClient();
 
     @Override
     public HttpTaskManager getManager() {
-        return new HttpTaskManager(new FakeTaskClient());
+        return new HttpTaskManager(client);
     }
 
     // Другие методы тестирования
@@ -42,14 +44,14 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         // Тест для метода load
 
         // Подготавливаем фейковое состояние менеджера
-        Task task = new Task("Fake Task", "Fake Description", StatusTask.NEW, 5, LocalDateTime.now());
+        Task task = new Task("Fake Task", "Fake Description", StatusTask.NEW, 5,  LocalDateTime.of(2023, 9, 12, 00, 00, 00));
         manager.addTask(task);
 
         // Сохраняем состояние менеджера
         manager.save();
 
         // Создаем новый менеджер для загрузки состояния
-        HttpTaskManager loadedManager = new HttpTaskManager(new FakeTaskClient());
+        HttpTaskManager loadedManager = getManager();
 
         // Загружаем состояние менеджера
         loadedManager.load();

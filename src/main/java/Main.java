@@ -2,6 +2,7 @@
 import manager.Managers;
 import manager.TaskManager;
 import manager.file.FileBackedTasksManager;
+import manager.server.HttpTaskServer;
 import manager.server.KVServer;
 import model.Epic;
 import model.StatusTask;
@@ -18,8 +19,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         KVServer server = new KVServer();
-
         server.start();
+        HttpTaskServer httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
        // FileBackedTasksManager taskManagerOld = new FileBackedTasksManager("filewriter.csv");
         TaskManager taskManagerOld = Managers.getDefault();
 

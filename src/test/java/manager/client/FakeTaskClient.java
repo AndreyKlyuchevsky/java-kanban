@@ -1,8 +1,11 @@
-package manager;
+package manager.client;
 
-import manager.client.TaskClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FakeTaskClient implements TaskClient {
+    private Map<String,String> contentMap = new HashMap<>();
     @Override
     public String register() {
         // Заглушка для метода register, возвращает фейковый идентификатор
@@ -12,11 +15,12 @@ public class FakeTaskClient implements TaskClient {
     @Override
     public void put(String key, String json) {
         // Заглушка для метода put, ничего не делает
+        contentMap.put(key, json);
     }
 
     @Override
     public String load(String key) {
         // Заглушка для метода load, всегда возвращает фейковый JSON
-        return "{\"id\":\"fake_task_id\",\"title\":\"Fake Task\",\"description\":\"Fake Description\",\"status\":\"NEW\",\"estimate\":5}";
+        return contentMap.get(key);
     }
 }
