@@ -49,18 +49,16 @@ public class TaskHandler implements HttpHandler {
                 // Обработка POST-запроса для создания или обновления Task
                 Task newTask = parseTaskFromBody(exchange);
 
-                if (newTask != null) {
-                    Integer taskId = extractTaskIdFromRequest(exchange);
+                Integer taskId = extractTaskIdFromRequest(exchange);
 
-                    if (taskId != null) {
-                        // Если есть корректный id, это запрос на обновление
-                        manager.updateTask(newTask);
-                        sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK ); // Отправляем код 200 OK
-                    } else {
-                        // Иначе, это запрос на создание нового Task
-                        manager.addTask(newTask);
-                        sendJsonResponse(exchange, gson.toJson(newTask), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
-                    }
+                if (taskId != null) {
+                    // Если есть корректный id, это запрос на обновление
+                    manager.updateTask(newTask);
+                    sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK); // Отправляем код 200 OK
+                } else {
+                    // Иначе, это запрос на создание нового Task
+                    manager.addTask(newTask);
+                    sendJsonResponse(exchange, gson.toJson(newTask), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления Task

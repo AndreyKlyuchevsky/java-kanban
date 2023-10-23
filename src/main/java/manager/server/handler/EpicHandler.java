@@ -40,7 +40,7 @@ public class EpicHandler implements HttpHandler {
                     if (epic != null) {
                         sendResponse(exchange, gson.toJson(epic), HttpURLConnection.HTTP_OK);
                     } else {
-                        throw new NotFoundException("Epic not found");
+                        sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Epic not found");
                     }
                 }
             }
@@ -49,19 +49,14 @@ public class EpicHandler implements HttpHandler {
                 // Обработка POST-запроса для создания или обновления Epic
                 Epic newEpic = parseEpicFromBody(exchange);
 
-                if (newEpic != null) {
-                    if (newEpic.getId() != null) {
-                        // Если есть корректный id, это запрос на обновление
-                        taskManager.updateEpic(newEpic);
-                        sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK); // Отправляем код 200 OK
-                    } else {
-                        // Иначе, это запрос на создание нового Epic
-                        taskManager.addEpic(newEpic);
-                        sendJsonResponse(exchange, gson.toJson(newEpic), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
-                    }
-                }else{
-                    // Объект не найден или неверного формата, отправляем ошибку
-                    sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, "Invalid Epic object");
+                if (newEpic.getId() != null) {
+                    // Если есть корректный id, это запрос на обновление
+                    taskManager.updateEpic(newEpic);
+                    sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK); // Отправляем код 200 OK
+                } else {
+                    // Иначе, это запрос на создание нового Epic
+                    taskManager.addEpic(newEpic);
+                    sendJsonResponse(exchange, gson.toJson(newEpic), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления Epic
@@ -70,24 +65,17 @@ public class EpicHandler implements HttpHandler {
                     taskManager.removeEpicById(epicId);
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 } else {
-                    // ID не найден или неверного формата, отправляем ошибку
                     taskManager.removeEpicAll();
                     sendEmptyResponse(exchange, HttpURLConnection.HTTP_NO_CONTENT); // Отправляем код 204 No Content
                 }
             }
-        } catch (NotFoundException e) {
-            // Сущность не найдена, отправляем ошибку HTTP_NOT_FOUND
-            sendErrorResponse(exchange, HttpURLConnection.HTTP_NOT_FOUND, e.getMessage());
         } catch (JsonSyntaxException e) {
             // Ошибка синтаксиса JSON, отправляем ошибку HTTP_BAD_REQUEST
             sendErrorResponse(exchange, HttpURLConnection.HTTP_BAD_REQUEST, "Invalid JSON format");
         } catch (Exception e) {
             // Ошибка синтаксиса JSON, отправляем ошибку HTTP_BAD_REQUEST
             sendErrorResponse(exchange, HttpURLConnection.HTTP_BAD_REQUEST, "Invalid request");
-        }
-
-
-        finally {
+        } finally {
             exchange.close();
         }
     }
@@ -101,7 +89,6 @@ public class EpicHandler implements HttpHandler {
         if (queryParams.length == 2 && "id".equals(queryParams[0])) {
             return Integer.parseInt(queryParams[1]);
         }
-        // ID не найден или неверного формата
         return null;
     }
 

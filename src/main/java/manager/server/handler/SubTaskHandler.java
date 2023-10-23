@@ -49,18 +49,16 @@ public class SubTaskHandler implements HttpHandler {
                 // Обработка POST-запроса для создания или обновления Subtask
                 SubTask newSubtask = parseSubtaskFromBody(exchange);
 
-                if (newSubtask != null) {
-                    Integer subtaskId = extractSubtaskIdFromRequest(exchange);
+                Integer subtaskId = extractSubtaskIdFromRequest(exchange);
 
-                    if (subtaskId != null) {
-                        // Если есть корректный id, это запрос на обновление
-                        manager.updateSubTask(newSubtask);
-                        sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK ); // Отправляем код 200 OK
-                    } else {
-                        // Иначе, это запрос на создание нового Subtask
-                        manager.addSubTask(newSubtask);
-                        sendJsonResponse(exchange, gson.toJson(newSubtask), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
-                    }
+                if (subtaskId != null) {
+                    // Если есть корректный id, это запрос на обновление
+                    manager.updateSubTask(newSubtask);
+                    sendEmptyResponse(exchange, HttpURLConnection.HTTP_OK); // Отправляем код 200 OK
+                } else {
+                    // Иначе, это запрос на создание нового Subtask
+                    manager.addSubTask(newSubtask);
+                    sendJsonResponse(exchange, gson.toJson(newSubtask), HttpURLConnection.HTTP_CREATED); // Отправляем код 201 Created
                 }
             } else if ("DELETE".equals(exchange.getRequestMethod())) {
                 // Обработка DELETE-запроса для удаления SubTask

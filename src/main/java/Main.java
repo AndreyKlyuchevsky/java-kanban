@@ -75,11 +75,9 @@ public class Main {
         System.out.println("удаляем Epic");
         taskManagerOld.removeTaskById(epic1.getId());
         System.out.println(taskManagerOld.getHistory());
-        taskManagerOld.save();
+
 
         TaskManager taskManagerNew = Managers.getDefault();
-
-        taskManagerNew.load();
 
 
         boolean taskBoolean = testTaskCompare(taskManagerOld.getTaskAll(), taskManagerNew.getTaskAll());

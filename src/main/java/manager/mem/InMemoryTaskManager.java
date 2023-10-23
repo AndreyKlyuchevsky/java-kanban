@@ -3,6 +3,7 @@ package manager.mem;
 import manager.HistoryManager;
 import manager.Managers;
 import manager.TaskManager;
+import manager.server.handler.NotFoundException;
 import model.Epic;
 import model.StatusTask;
 import model.SubTask;
@@ -18,45 +19,44 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Epic> epicMap = new HashMap<>();
     protected Map<Integer, SubTask> subTaskMap = new HashMap<>();
     private final HistoryManager history = new Managers().getDefaultHistory();
-    private final TreeSet<Task> taskTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    protected final TreeSet<Task> taskTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
-    private int getId() {
+    private int getNextId() {
         return id++;
     }
 
-
-    @Override
-    public void load() {
-
+    protected int getId() {
+        return id;
     }
 
-    @Override
-    public void save() {
-
+    protected void setId(int Id){
+        this.id=id;
     }
 
     @Override
     public void addTask(Task task) {
         validateTaskDurationInterval(task);
-        task.setId(getId());
+        task.setId(getNextId());
         taskMap.put(task.getId(), task);
-        resetTaskTreeSet(task);
+        taskTreeSet.remove(task);
+        taskTreeSet.add(task);
     }
 
     @Override
     public void addEpic(Epic epic) {
-        epic.setId(getId());
+        epic.setId(getNextId());
         epicMap.put(epic.getId(), epic);
     }
 
     @Override
     public void addSubTask(SubTask subtask) {
         validateTaskDurationInterval(subtask);
-        subtask.setId(getId());
-        epicMap.get(subtask.getEpicId()).addSubtaskId(subtask);
+        subtask.setId(getNextId());
+        Epic epic  = epicMap.get(subtask.getEpicId());
+        epic.addSubtaskId(subtask);
         subTaskMap.put(subtask.getId(), subtask);
-        updateStatus(subtask.getEpicId());
-        resetTaskTreeSet(subtask);
+        updateStatus(epic);
+        taskTreeSet.add(subtask);
     }
 
     private void validateTaskDurationInterval(Task task) {
@@ -87,21 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(taskTreeSet);
     }
 
-    public void resetTaskTreeSet(Task task) {
-        if (!taskTreeSet.contains(task)) {
-            taskTreeSet.remove(task);
-        }
-        taskTreeSet.add(task);
-    }
-
-    public void removeTaskTreeSet(Task task) {
-        if (taskTreeSet.contains(task)) {
-            taskTreeSet.remove(task);
-        }
-    }
-
-    public void updateStatus(int EpicId) {
-        Epic epic = epicMap.get(EpicId);
+    public void updateStatus(Epic epic) {
         List<Integer> idSubtask = epic.getSubtaskIds();
         int countNew = 0;
         int countDone = 0;
@@ -132,11 +118,12 @@ public class InMemoryTaskManager implements TaskManager {
         if (task == null) {
             throw new IllegalArgumentException("Задача должна быть заполнена");
         } else if (!taskMap.containsKey(task.getId())) {
-            throw new IllegalArgumentException("Задача не найдена");
+            throw new NotFoundException("Задача не найдена");
         }
-        removeTaskTreeSet(taskMap.get(task.getId()));
+        taskTreeSet.remove(taskMap.get(task.getId()));
+        validateTaskDurationInterval(task);
         taskMap.put(task.getId(), task);
-        resetTaskTreeSet(task);
+        taskTreeSet.add(task);
     }
 
     @Override
@@ -144,7 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             throw new IllegalArgumentException("Задача должна быть заполнена");
         } else if (!epicMap.containsKey(epic.getId())) {
-            throw new IllegalArgumentException("Задача не найдена");
+            throw new NotFoundException("Задача не найдена");
         }
         Epic updateEpics = epicMap.get(epic.getId());
         updateEpics.setName(epic.getName());
@@ -156,15 +143,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask == null) {
             throw new IllegalArgumentException("Задача должна быть заполнена");
         } else if (!subTaskMap.containsKey(subtask.getId())) {
-            throw new IllegalArgumentException("Задача не найдена");
+            throw new NotFoundException("Задача не найдена");
         }
         validateTaskDurationInterval(subtask);
-        removeTaskTreeSet(subTaskMap.get(subtask.getId()));
+        taskTreeSet.remove(subTaskMap.get(subtask.getId()));
         subTaskMap.put(subtask.getId(), subtask);
-        resetTaskTreeSet(subtask);
-        updateStatus(subtask.getEpicId());
+        taskTreeSet.add(subtask);
         if (subtask.getEpicId() > 0) {
-            epicMap.get(subtask.getEpicId()).recalculate();
+            Epic epic = epicMap.get(subtask.getEpicId());
+            updateStatus(epic);
+            epic.recalculate();
         }
     }
 
@@ -241,7 +229,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTaskAll() {
         for (Integer value : taskMap.keySet()) {
             history.remove(value);
-            removeTaskTreeSet(taskMap.get(value));
+            taskTreeSet.remove(taskMap.get(value));
         }
         taskMap.clear();
     }
@@ -258,7 +246,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubTaskAll() {
         for (Integer value : subTaskMap.keySet()) {
-            removeTaskTreeSet(subTaskMap.get(value));
+            taskTreeSet.remove(subTaskMap.get(value));
             history.remove(value);
         }
         subTaskMap.clear();
@@ -273,7 +261,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTaskById(int id) {
         if (taskMap.containsKey(id)) {
-            removeTaskTreeSet(taskMap.get(id));
+            taskTreeSet.remove(taskMap.get(id));
             taskMap.remove(id);
             history.remove(id);
         }
@@ -283,13 +271,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeSubTaskById(int id) {
         if (subTaskMap.containsKey(id)) {
             int idEpic = subTaskMap.get(id).getEpicId();
-            epicMap.get(idEpic).removeSubtaskId(id);
-            removeTaskTreeSet(subTaskMap.get(id));
+            Epic epic = epicMap.get(idEpic);
+            epic.removeSubtaskId(id);
+            taskTreeSet.remove(subTaskMap.get(id));
             subTaskMap.remove(id);
             history.remove(id);
-            updateStatus(idEpic);
+            updateStatus(epic);
         }
     }
+
 
     @Override
     public void removeEpicById(int id) {

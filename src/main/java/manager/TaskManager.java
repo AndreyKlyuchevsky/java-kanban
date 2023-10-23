@@ -16,10 +16,6 @@ public interface TaskManager {
 
     void addSubTask(SubTask subtask);
 
-    void load();
-
-    void save();
-
     void updateTask(Task task);
 
     void updateEpic(Epic epic);

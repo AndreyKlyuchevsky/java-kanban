@@ -6,7 +6,9 @@ import manager.mem.InMemoryHistoryManager;
 public class Managers {
 
     public static TaskManager getDefault() {
-        return new HttpTaskManager("http://localhost:8078");
+       HttpTaskManager manager = new HttpTaskManager ("http://localhost:8078");
+       HttpTaskManager.loadFromFile(manager);
+       return  manager;
     }
 
     public HistoryManager getDefaultHistory() {

@@ -35,6 +35,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         taskManagerState.setSubTaskMap(this.subTaskMap);
         taskManagerState.setEpicMap(this.epicMap);
         List<Integer> history = new ArrayList<>();
+        taskManagerState.setId(this.getId());
 
         for (Task tasks : super.getHistory()) {
             history.add(tasks.getId());
@@ -49,7 +50,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         client.put("task_manager_state", managerStateJson);
     }
 
-    @Override
+
     public void load() {
         // Загружаем JSON-состояние менеджера с сервера
         String managerStateJson = client.load("task_manager_state");
@@ -63,18 +64,33 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 // Если преобразование удалось, устанавливаем состояние менеджера
                 this.taskMap = taskManagerState.getTaskMap();
                 this.subTaskMap = taskManagerState.getSubTaskMap();
-                this.epicMap = taskManagerState.getEpicMap();
+
+                // Восстановление подзадач в эпиках
+                this.epicMap.forEach((epicId, epic) -> {
+
+                    for (Map.Entry<Integer, SubTask> entry : taskManagerState.subTaskMap.entrySet()) {
+                        SubTask subTask = entry.getValue();
+                        if (subTask.getEpicId() == epicId) {
+                            epic.addSubtaskId(subTask);
+                        }
+                    }
+                });
+
                 this.taskMap.forEach((key, value) -> {
-                    this.resetTaskTreeSet(value);
+                    this.taskTreeSet.remove(value);
+                    this.taskTreeSet.add(value);
                 });
                 this.subTaskMap.forEach((key, value) -> {
-                    this.resetTaskTreeSet(value);
+                    this.taskTreeSet.remove(value);
+                    this.taskTreeSet.add(value);
                 });
                 // Восстанавливаем историю задач
                 List<Integer> history = taskManagerState.getHistory();
                 for (int taskId : history) {
                     this.getTaskById(taskId);
                 }
+                // Восстанавливаем счетчик задач
+                this.setId(taskManagerState.getId());
             }
         }
     }
@@ -82,8 +98,17 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     public static class TaskManagerState {
         private Map<Integer, Task> taskMap = new HashMap<>();
-        private  Map<Integer, Epic> epicMap = new HashMap<>();
-        private  Map<Integer, SubTask> subTaskMap = new HashMap<>();
+        private Map<Integer, Epic> epicMap = new HashMap<>();
+        private Map<Integer, SubTask> subTaskMap = new HashMap<>();
+        private int id;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
 
         public List<Integer> getHistory() {
             return history;
