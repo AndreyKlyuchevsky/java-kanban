@@ -22,8 +22,8 @@ public class Main {
         server.start();
         HttpTaskServer httpTaskServer = new HttpTaskServer();
         httpTaskServer.start();
-       // FileBackedTasksManager taskManagerOld = new FileBackedTasksManager("filewriter.csv");
-        TaskManager taskManagerOld = Managers.getDefault();
+        TaskManager taskManagerOld =  FileBackedTasksManager.loadFromFile("filewriter.csv");
+        //TaskManager taskManagerOld = Managers.getDefault();
 
         Task task1 = new Task("Первая задача", "очень важная первая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 12, 00, 00, 00));
         Task task2 = new Task("Вторая задача", "оычень важная вторая задача", StatusTask.NEW, 8, LocalDateTime.of(2023, 9, 8, 00, 00, 00));
@@ -77,7 +77,7 @@ public class Main {
         System.out.println(taskManagerOld.getHistory());
 
 
-        TaskManager taskManagerNew = Managers.getDefault();
+        TaskManager taskManagerNew =  FileBackedTasksManager.loadFromFile("filewriter.csv");
 
 
         boolean taskBoolean = testTaskCompare(taskManagerOld.getTaskAll(), taskManagerNew.getTaskAll());

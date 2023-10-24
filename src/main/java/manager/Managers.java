@@ -7,7 +7,7 @@ public class Managers {
 
     public static TaskManager getDefault() {
        HttpTaskManager manager = new HttpTaskManager ("http://localhost:8078");
-       HttpTaskManager.loadFromFile(manager);
+      // HttpTaskManager.loadFromFile(manager);
        return  manager;
     }
 

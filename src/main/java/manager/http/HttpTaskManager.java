@@ -65,16 +65,22 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 this.taskMap = taskManagerState.getTaskMap();
                 this.subTaskMap = taskManagerState.getSubTaskMap();
 
-                // Восстановление подзадач в эпиках
-                this.epicMap.forEach((epicId, epic) -> {
+                // Очищаем эпики
+                this.epicMap.clear();
 
-                    for (Map.Entry<Integer, SubTask> entry : taskManagerState.subTaskMap.entrySet()) {
-                        SubTask subTask = entry.getValue();
-                        if (subTask.getEpicId() == epicId) {
+                // Восстанавливаем эпики
+                for (Map.Entry<Integer, Epic> entry : taskManagerState.getEpicMap().entrySet()) {
+                    Epic epic = entry.getValue();
+                    this.epicMap.put(epic.getId(), epic);
+                    epic.removeSubtaskAll();
+                     //Восстанавливаем подзадачи в эпиках
+                    for (Map.Entry<Integer, SubTask> subTaskEntry : taskManagerState.getSubTaskMap().entrySet()) {
+                        SubTask subTask = subTaskEntry.getValue();
+                        if (subTask.getEpicId() == epic.getId()) {
                             epic.addSubtaskId(subTask);
                         }
                     }
-                });
+                }
 
                 this.taskMap.forEach((key, value) -> {
                     this.taskTreeSet.remove(value);
